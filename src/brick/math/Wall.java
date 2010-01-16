@@ -16,6 +16,8 @@ import java.awt.Graphics2D;
  * @author Szymon
  */
 public class Wall {
+	int[] corners = new int[8];
+	int[] cornerBrightnesses = new int[8]; // 0-255
 
 	void paintMe(Graphics2D g) {}
 }
