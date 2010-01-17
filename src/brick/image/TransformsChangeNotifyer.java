@@ -13,6 +13,7 @@ public interface TransformsChangeNotifyer {
 	public static final int X = 1;
 	public static final int Y = 2;
 	public static final int Z = 3;
+	public static final int BAD = -100;
 	/**
 	 *
 	 * @param which one of: X, Y, Z

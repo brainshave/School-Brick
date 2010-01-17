@@ -11,6 +11,9 @@
 
 package brick.gui;
 
+import brick.image.TransformsChangeNotifyer;
+import brick.math.Brick;
+
 /**
  *
  * @author Szymon
@@ -30,19 +33,53 @@ public class BrickFrame extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
+
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        xScrollersPanel = new brick.gui.ScrollersPanel();
+        yScrollersPanel = new brick.gui.ScrollersPanel();
+        zScrollersPanel = new brick.gui.ScrollersPanel();
+        renderPanel = new brick.gui.RenderPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(800, 600));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 681, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 560, Short.MAX_VALUE)
-        );
+        jTabbedPane1.setBorder(null);
+
+        xScrollersPanel.setAxis(TransformsChangeNotifyer.X);
+        xScrollersPanel.setTitle("X");
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), xScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
+        bindingGroup.addBinding(binding);
+
+        jTabbedPane1.addTab(xScrollersPanel.getTitle(), xScrollersPanel);
+
+        yScrollersPanel.setAxis(TransformsChangeNotifyer.Y);
+        yScrollersPanel.setTitle("Y");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), yScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
+        bindingGroup.addBinding(binding);
+
+        jTabbedPane1.addTab(yScrollersPanel.getTitle(), yScrollersPanel);
+
+        zScrollersPanel.setAxis(TransformsChangeNotifyer.Z);
+        zScrollersPanel.setTitle("Z");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), zScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
+        bindingGroup.addBinding(binding);
+
+        jTabbedPane1.addTab(zScrollersPanel.getTitle(), zScrollersPanel);
+
+        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.EAST);
+
+        renderPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), renderPanel, org.jdesktop.beansbinding.BeanProperty.create("brick"));
+        bindingGroup.addBinding(binding);
+
+        getContentPane().add(renderPanel, java.awt.BorderLayout.CENTER);
+
+        bindingGroup.bind();
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -59,6 +96,53 @@ public class BrickFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private brick.gui.RenderPanel renderPanel;
+    private brick.gui.ScrollersPanel xScrollersPanel;
+    private brick.gui.ScrollersPanel yScrollersPanel;
+    private brick.gui.ScrollersPanel zScrollersPanel;
+    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
+
+	private Brick brick = new Brick();
+
+	/**
+	 * Get the value of brick
+	 *
+	 * @return the value of brick
+	 */
+	public Brick getBrick() {
+		return brick;
+	}
+
+	/**
+	 * Set the value of brick
+	 *
+	 * @param brick new value of brick
+	 */
+	public void setBrick(Brick brick) {
+		this.brick = brick;
+	}
+//	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+//
+//	/**
+//	 * Add PropertyChangeListener.
+//	 *
+//	 * @param listener
+//	 */
+//	@Override
+//	public void addPropertyChangeListener(PropertyChangeListener listener) {
+//		propertyChangeSupport.addPropertyChangeListener(listener);
+//	}
+//
+//	/**
+//	 * Remove PropertyChangeListener.
+//	 *
+//	 * @param listener
+//	 */
+//	@Override
+//	public void removePropertyChangeListener(PropertyChangeListener listener) {
+//		propertyChangeSupport.removePropertyChangeListener(listener);
+//	}
 
 }

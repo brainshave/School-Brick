@@ -2,27 +2,50 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package brick.math;
 
 import brick.image.TransformsChangeNotifyer;
+import brick.image.Wall;
+import java.awt.Graphics2D;
 
 /**
  *
  * @author Szymon
  */
 public class Brick implements TransformsChangeNotifyer {
+
 	public static float dgToRad = (float) Math.PI / 180;
 	public int[] buff;
-	Matrix4x4 transform, scale, rotX, rotY, rotZ;
-
+	Matrix4x4 transform = new Matrix4x4();
+	Matrix4x4 scale = new Matrix4x4();
+	Matrix4x4 rotX = new Matrix4x4();
+	Matrix4x4 rotY = new Matrix4x4();
+	Matrix4x4 rotZ = new Matrix4x4();
+	Matrix4x4 endMatrix = new Matrix4x4();
+	Wall[] walls;
+	private final boolean[] visible = {true, true, true, true, true, true};
 
 	public Brick() {
-		transform = new Matrix4x4();
-		scale = new Matrix4x4();
-		rotX = new Matrix4x4();
-		rotY = new Matrix4x4();
-		rotZ = new Matrix4x4();
+	}
+
+	public Brick(Wall[] walls) {
+		if (walls.length != 6) {
+			throw new ArrayIndexOutOfBoundsException("Wrong number of walls: " + walls.length);
+		}
+		this.walls = walls;
+	}
+
+	public void paint(Graphics2D g) {
+		for (int i = 0; i < 6; ++i) {
+			if (visible[i]) {
+				walls[i].paint(g);
+			}
+		}
+	}
+
+	private void recalc() {
+		endMatrix = transform.product(rotX.product(rotY.product(rotZ.product(scale))));
+		// TODO: określanie które ściany mają być widoczne?
 	}
 
 	private int index(int which) {
@@ -37,6 +60,8 @@ public class Brick implements TransformsChangeNotifyer {
 			case Z:
 				index = 2;
 				break;
+			default:
+				throw new ArrayIndexOutOfBoundsException("Bad axis given.");
 		}
 		return index;
 	}
@@ -46,6 +71,7 @@ public class Brick implements TransformsChangeNotifyer {
 		if (index >= 0) {
 			transform.data[index][3] = value;
 		}
+		recalc();
 	}
 
 	public void setAngle(int which, double value) {
@@ -83,7 +109,10 @@ public class Brick implements TransformsChangeNotifyer {
 				rotZ.data = tmp;
 				break;
 			}
+			default:
+				throw new ArrayIndexOutOfBoundsException("Bad axis given.");
 		}
+		recalc();
 	}
 
 	public void setScale(int which, float value) {
@@ -91,9 +120,16 @@ public class Brick implements TransformsChangeNotifyer {
 		if (index >= 0) {
 			scale.data[index][index] = value;
 		}
+		recalc();
 	}
 
-	void getVisibleTriangles() {
-		
+
+	public Wall[] getWalls() {
+		return walls;
+	}
+
+	public void setWalls(Wall[] walls) {
+
+		this.walls = walls;
 	}
 }
