@@ -161,6 +161,11 @@ public class ScrollersPanel extends javax.swing.JPanel {
 
 	private void anyScrollBarMoved(java.awt.event.AdjustmentEvent evt) {//GEN-FIRST:event_anyScrollBarMoved
 		// TODO add your handling code here:
+		if(abstractBrick != null) {
+			abstractBrick.setAngle(axis, angleScrollBar.getValue());
+			abstractBrick.setScale(axis, (double)scaleScrollBar.getValue() / 100);
+			abstractBrick.setTransform(axis, positionScrollBar.getValue() / 100);
+		}
 	}//GEN-LAST:event_anyScrollBarMoved
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -176,6 +181,7 @@ public class ScrollersPanel extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 	protected String title = "ASDF";
 	protected int axis = TransformsChangeNotifyer.BAD;
+	protected TransformsChangeNotifyer abstractBrick = null;
 
 	public String getTitle() {
 		return title;
@@ -202,7 +208,6 @@ public class ScrollersPanel extends javax.swing.JPanel {
 	public void setAxis(int axis) {
 		this.axis = axis;
 	}
-	protected TransformsChangeNotifyer abstractBrick;
 
 	public TransformsChangeNotifyer getAbstractBrick() {
 		return abstractBrick;

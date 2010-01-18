@@ -16,7 +16,7 @@ import java.awt.Graphics2D;
  */
 public class Wall {
 
-	private int[][] corners = new int[4][2];
+	private int[][] corners = new int[4][];
 	private int[] brightnesses = new int[4]; // 0-255
 	private int[][] images;
 	private int actualImage = 0;
@@ -28,9 +28,14 @@ public class Wall {
 		this.images = images;
 	}
 
-	public void setCorner(int num, int x, int y) {
-		corners[num][0] = x;
-		corners[num][1] = y;
+	public void setCorner(int num, int[] c) {
+		corners[num] = c;
+	}
+	public void setCorners(int[] c0, int[] c1, int[] c2, int [] c3) {
+		corners[0] = c0;
+		corners[1] = c1;
+		corners[2] = c2;
+		corners[3] = c3;
 	}
 
 	public void paint(Graphics2D g) {

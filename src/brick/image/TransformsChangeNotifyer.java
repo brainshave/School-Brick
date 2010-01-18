@@ -19,7 +19,7 @@ public interface TransformsChangeNotifyer {
 	 * @param which one of: X, Y, Z
 	 * @param value
 	 */
-	public void setTransform(int which, int value);
+	public void setTransform(int which, double value);
 
 	/**
 	 *
@@ -33,6 +33,6 @@ public interface TransformsChangeNotifyer {
 	 * @param which one of: X, Y, Z
 	 * @param value
 	 */
-	public void setScale(int which, float value);
+	public void setScale(int which, double value);
 
 }

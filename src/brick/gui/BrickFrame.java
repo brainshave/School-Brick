@@ -33,8 +33,14 @@ public class BrickFrame extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
+        jPanel1 = new javax.swing.JPanel();
+        screenDistanceScrollBar = new javax.swing.JScrollBar();
+        objectDictanceScrollBar = new javax.swing.JScrollBar();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         xScrollersPanel = new brick.gui.ScrollersPanel();
         yScrollersPanel = new brick.gui.ScrollersPanel();
@@ -43,6 +49,58 @@ public class BrickFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(800, 600));
+
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
+        screenDistanceScrollBar.setOrientation(javax.swing.JScrollBar.HORIZONTAL);
+        screenDistanceScrollBar.setValue(5);
+        screenDistanceScrollBar.setVisibleAmount(1);
+        screenDistanceScrollBar.addAdjustmentListener(new java.awt.event.AdjustmentListener() {
+            public void adjustmentValueChanged(java.awt.event.AdjustmentEvent evt) {
+                viewChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
+        jPanel1.add(screenDistanceScrollBar, gridBagConstraints);
+
+        objectDictanceScrollBar.setOrientation(javax.swing.JScrollBar.HORIZONTAL);
+        objectDictanceScrollBar.setValue(5);
+        objectDictanceScrollBar.setVisibleAmount(1);
+        objectDictanceScrollBar.addAdjustmentListener(new java.awt.event.AdjustmentListener() {
+            public void adjustmentValueChanged(java.awt.event.AdjustmentEvent evt) {
+                viewChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
+        jPanel1.add(objectDictanceScrollBar, gridBagConstraints);
+
+        jLabel1.setText("Odległość matówki:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
+        jPanel1.add(jLabel1, gridBagConstraints);
+
+        jLabel2.setText("Odległość obiektu:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
+        jPanel1.add(jLabel2, gridBagConstraints);
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
         jTabbedPane1.setBorder(null);
 
@@ -84,6 +142,11 @@ public class BrickFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+	private void viewChanged(java.awt.event.AdjustmentEvent evt) {//GEN-FIRST:event_viewChanged
+		brick.setBrickDistance(objectDictanceScrollBar.getValue());
+		brick.setScreenDistance(screenDistanceScrollBar.getValue());
+	}//GEN-LAST:event_viewChanged
+
     /**
     * @param args the command line arguments
     */
@@ -96,8 +159,13 @@ public class BrickFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JScrollBar objectDictanceScrollBar;
     private brick.gui.RenderPanel renderPanel;
+    private javax.swing.JScrollBar screenDistanceScrollBar;
     private brick.gui.ScrollersPanel xScrollersPanel;
     private brick.gui.ScrollersPanel yScrollersPanel;
     private brick.gui.ScrollersPanel zScrollersPanel;
