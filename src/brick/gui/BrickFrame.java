@@ -56,7 +56,7 @@ public class BrickFrame extends javax.swing.JFrame {
         screenDistanceScrollBar.setMinimum(1);
         screenDistanceScrollBar.setOrientation(javax.swing.JScrollBar.HORIZONTAL);
         screenDistanceScrollBar.setUnitIncrement(10);
-        screenDistanceScrollBar.setValue(100);
+        screenDistanceScrollBar.setValue(300);
         screenDistanceScrollBar.setVisibleAmount(1);
         screenDistanceScrollBar.addAdjustmentListener(new java.awt.event.AdjustmentListener() {
             public void adjustmentValueChanged(java.awt.event.AdjustmentEvent evt) {
@@ -75,7 +75,7 @@ public class BrickFrame extends javax.swing.JFrame {
         objectDictanceScrollBar.setMinimum(1);
         objectDictanceScrollBar.setOrientation(javax.swing.JScrollBar.HORIZONTAL);
         objectDictanceScrollBar.setUnitIncrement(10);
-        objectDictanceScrollBar.setValue(100);
+        objectDictanceScrollBar.setValue(300);
         objectDictanceScrollBar.setVisibleAmount(1);
         objectDictanceScrollBar.addAdjustmentListener(new java.awt.event.AdjustmentListener() {
             public void adjustmentValueChanged(java.awt.event.AdjustmentEvent evt) {

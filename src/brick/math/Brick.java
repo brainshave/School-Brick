@@ -194,8 +194,8 @@ public class Brick implements TransformsChangeNotifyer {
 				double[][] tmp = {
 					{cos, sin, 0, 0},
 					{-sin, cos, 0, 0},
-					{0, 0, 0, 1, 0},
-					{0, 0, 0, 0, 1}
+					{0, 0, 1, 0},
+					{0, 0, 0, 1}
 				};
 				rotZ.data = tmp;
 				break;
@@ -208,16 +208,16 @@ public class Brick implements TransformsChangeNotifyer {
 
 	public void setScale(int which, double value) {
 		int index = index(which);
-		if (index >= 0) {
-			scale.data[index][index] = value;
-		}
+		
+		scale.data[index][index] = value;
+		
 		//recalc();
 	}
 
 	public Wall[] getWalls() {
 		return walls;
 	}
-	protected int screenDistance = 5;
+	protected int screenDistance = 300;
 
 	public int getScreenDistance() {
 		return screenDistance;
@@ -228,7 +228,7 @@ public class Brick implements TransformsChangeNotifyer {
 		to2DMatrix.data[3][2] = 1d / screenDistance;
 
 	}
-	protected int brickDistance = 5;
+	protected int brickDistance = 300;
 
 	public int getBrickDistance() {
 		return brickDistance;

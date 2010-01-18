@@ -40,7 +40,7 @@
             <Property name="minimum" type="int" value="1"/>
             <Property name="orientation" type="int" value="0"/>
             <Property name="unitIncrement" type="int" value="10"/>
-            <Property name="value" type="int" value="100"/>
+            <Property name="value" type="int" value="300"/>
             <Property name="visibleAmount" type="int" value="1"/>
           </Properties>
           <Events>
@@ -58,7 +58,7 @@
             <Property name="minimum" type="int" value="1"/>
             <Property name="orientation" type="int" value="0"/>
             <Property name="unitIncrement" type="int" value="10"/>
-            <Property name="value" type="int" value="100"/>
+            <Property name="value" type="int" value="300"/>
             <Property name="visibleAmount" type="int" value="1"/>
           </Properties>
           <Events>

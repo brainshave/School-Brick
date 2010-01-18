@@ -172,7 +172,7 @@ public class ScrollersPanel extends javax.swing.JPanel {
 				scale = (scale + 100) / 100;
 			}
 			abstractBrick.setScale(axis, scale);
-			abstractBrick.setTransform(axis, (double) positionScrollBar.getValue() / 100);
+			abstractBrick.setTransform(axis, (double) positionScrollBar.getValue());
 			abstractBrick.recalc();
 			if(renderPanel != null) {
 				renderPanel.repaint();
