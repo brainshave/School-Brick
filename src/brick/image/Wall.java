@@ -42,12 +42,13 @@ public class Wall {
 
 	public void paint(Graphics2D g, int width, int height) {
 		// rysowanie samych kontur, póki co.
+		System.out.println("Painting " + this);
 		for (int i = 0; i < 4; ++i) {
 			int j = i + 1;
 			if (j >= 4) {
 				j = 0;
 			}
-			g.drawLine(corners[i][0] + width/2, corners[i][1]+ width/2, corners[j][0]+height/2, corners[j][1]+ height/2);
+			g.drawLine(corners[i][0] + width/2, corners[i][1]+height/2, corners[j][0]+ width/2, corners[j][1]+ height/2);
 		}
 	}
 
@@ -55,5 +56,15 @@ public class Wall {
 	}
 
 	public void nextImage() {
+	}
+
+	@Override
+	public String toString() {
+		String str = "{ ";
+		for(int i = 0; i < 4; ++i) {
+			str += corners[i][0] + " " + corners[i][1] + ", ";
+		}
+		str += "}";
+		return str;
 	}
 }

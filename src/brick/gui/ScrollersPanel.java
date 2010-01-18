@@ -163,9 +163,20 @@ public class ScrollersPanel extends javax.swing.JPanel {
 		// TODO add your handling code here:
 		if(abstractBrick != null) {
 			abstractBrick.setAngle(axis, angleScrollBar.getValue());
-			abstractBrick.setScale(axis, (double)scaleScrollBar.getValue() / 100);
-			abstractBrick.setTransform(axis, positionScrollBar.getValue() / 100);
+			double scale = scaleScrollBar.getValue();
+			if(scale < 0) {
+				scale = 100d/(-scale + 100);
+			} else if (scale == 0) {
+				scale = 1;
+			}else {
+				scale = (scale + 100) / 100;
+			}
+			abstractBrick.setScale(axis, scale);
+			abstractBrick.setTransform(axis, (double) positionScrollBar.getValue() / 100);
 			abstractBrick.recalc();
+			if(renderPanel != null) {
+				renderPanel.repaint();
+			}
 		}
 	}//GEN-LAST:event_anyScrollBarMoved
 
@@ -217,4 +228,15 @@ public class ScrollersPanel extends javax.swing.JPanel {
 	public void setAbstractBrick(TransformsChangeNotifyer abstractBrick) {
 		this.abstractBrick = abstractBrick;
 	}
+
+	protected RenderPanel renderPanel = null;
+
+	public RenderPanel getRenderPanel() {
+		return renderPanel;
+	}
+
+	public void setRenderPanel(RenderPanel renderPanel) {
+		this.renderPanel = renderPanel;
+	}
+
 }

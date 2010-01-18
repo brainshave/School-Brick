@@ -52,8 +52,11 @@ public class BrickFrame extends javax.swing.JFrame {
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
+        screenDistanceScrollBar.setMaximum(1000);
+        screenDistanceScrollBar.setMinimum(1);
         screenDistanceScrollBar.setOrientation(javax.swing.JScrollBar.HORIZONTAL);
-        screenDistanceScrollBar.setValue(5);
+        screenDistanceScrollBar.setUnitIncrement(10);
+        screenDistanceScrollBar.setValue(100);
         screenDistanceScrollBar.setVisibleAmount(1);
         screenDistanceScrollBar.addAdjustmentListener(new java.awt.event.AdjustmentListener() {
             public void adjustmentValueChanged(java.awt.event.AdjustmentEvent evt) {
@@ -68,8 +71,11 @@ public class BrickFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
         jPanel1.add(screenDistanceScrollBar, gridBagConstraints);
 
+        objectDictanceScrollBar.setMaximum(1000);
+        objectDictanceScrollBar.setMinimum(1);
         objectDictanceScrollBar.setOrientation(javax.swing.JScrollBar.HORIZONTAL);
-        objectDictanceScrollBar.setValue(5);
+        objectDictanceScrollBar.setUnitIncrement(10);
+        objectDictanceScrollBar.setValue(100);
         objectDictanceScrollBar.setVisibleAmount(1);
         objectDictanceScrollBar.addAdjustmentListener(new java.awt.event.AdjustmentListener() {
             public void adjustmentValueChanged(java.awt.event.AdjustmentEvent evt) {
@@ -105,6 +111,7 @@ public class BrickFrame extends javax.swing.JFrame {
         jTabbedPane1.setBorder(null);
 
         xScrollersPanel.setAxis(TransformsChangeNotifyer.X);
+        xScrollersPanel.setRenderPanel(renderPanel);
         xScrollersPanel.setTitle("X");
 
         org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), xScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
@@ -113,6 +120,7 @@ public class BrickFrame extends javax.swing.JFrame {
         jTabbedPane1.addTab(xScrollersPanel.getTitle(), xScrollersPanel);
 
         yScrollersPanel.setAxis(TransformsChangeNotifyer.Y);
+        yScrollersPanel.setRenderPanel(renderPanel);
         yScrollersPanel.setTitle("Y");
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), yScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
@@ -121,6 +129,7 @@ public class BrickFrame extends javax.swing.JFrame {
         jTabbedPane1.addTab(yScrollersPanel.getTitle(), yScrollersPanel);
 
         zScrollersPanel.setAxis(TransformsChangeNotifyer.Z);
+        zScrollersPanel.setRenderPanel(renderPanel);
         zScrollersPanel.setTitle("Z");
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), zScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
@@ -131,7 +140,6 @@ public class BrickFrame extends javax.swing.JFrame {
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.EAST);
 
         renderPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        renderPanel.setBrick(getBrick());
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), renderPanel, org.jdesktop.beansbinding.BeanProperty.create("brick"));
         bindingGroup.addBinding(binding);

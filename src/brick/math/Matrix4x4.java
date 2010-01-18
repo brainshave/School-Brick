@@ -38,5 +38,16 @@ public class Matrix4x4 {
 		}
 		return new Matrix4x4(tmpdata);
 	}
-
+	@Override
+	public String toString() {
+		String str = "[ ";
+		for(double[] row : data) {
+			for(double num : row) {
+				str += num + " ";
+			}
+			str += "; ";
+		}
+		str += "]";
+		return str;
+	}
 }

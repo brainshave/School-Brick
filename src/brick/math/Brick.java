@@ -47,7 +47,7 @@ public class Brick implements TransformsChangeNotifyer {
 	private Matrix4x4 endMatrix = new Matrix4x4();
 	private Matrix4x4 to2DMatrix = new Matrix4x4();
 	Wall[] walls;
-	private static final double SIZE = 1;
+	private static final double SIZE = 100;
 	private static final double[][] CORNERS = {
 		/* 0 */{-SIZE, SIZE, SIZE, 1},
 		/* 1 */ {-SIZE, SIZE, -SIZE, 1},
@@ -68,8 +68,10 @@ public class Brick implements TransformsChangeNotifyer {
 		for (int i = 0; i < 8; ++i) {
 			originalCorners3D[i] = new Matrix1x4(CORNERS[i]);
 		}
+		to2DMatrix.data[2][2] = 0;
 		Wall[] tmpWalls = {new Wall(), new Wall(), new Wall(), new Wall(), new Wall(), new Wall()};
 		setWalls(tmpWalls);
+		recalc();
 	}
 
 	public void setWalls(Wall[] walls) {
@@ -90,12 +92,12 @@ public class Brick implements TransformsChangeNotifyer {
 		 *	   | 5 |
 		 *     4---7
 		 */
-		walls[0].setCorners(corners2D[0], corners2D[1], corners2D[4], corners2D[5]);
-		walls[1].setCorners(corners2D[1], corners2D[2], corners2D[5], corners2D[6]);
-		walls[2].setCorners(corners2D[2], corners2D[3], corners2D[6], corners2D[7]);
-		walls[3].setCorners(corners2D[3], corners2D[0], corners2D[7], corners2D[4]);
-		walls[4].setCorners(corners2D[0], corners2D[3], corners2D[1], corners2D[2]);
-		walls[5].setCorners(corners2D[5], corners2D[6], corners2D[4], corners2D[7]);
+		walls[0].setCorners(corners2D[0], corners2D[1], corners2D[5], corners2D[4]);
+		walls[1].setCorners(corners2D[1], corners2D[2], corners2D[6], corners2D[5]);
+		walls[2].setCorners(corners2D[2], corners2D[3], corners2D[7], corners2D[6]);
+		walls[3].setCorners(corners2D[3], corners2D[0], corners2D[4], corners2D[7]);
+		walls[4].setCorners(corners2D[0], corners2D[3], corners2D[2], corners2D[1]);
+		walls[5].setCorners(corners2D[5], corners2D[6], corners2D[7], corners2D[4]);
 	}
 
 	public void paint(Graphics2D g, int width, int height) {
@@ -104,24 +106,38 @@ public class Brick implements TransformsChangeNotifyer {
 				walls[i].paint(g, width, height);
 			}
 		}
+//		for (int[] c1 : corners2D) {
+//			for(int[] c2: corners2D) {
+//				g.drawLine(c1[0] + width/2, c1[1] + height/2, c2[0] + width/2, c2[1] + height/2);
+//			}
+//		}
 	}
 
 	private void calcCorners() {
 		Matrix1x4 d3, d2;
 		int[] corner;
-		double focalPointFactor = (double) screenDistance / (screenDistance + brickDistance);
+		
 		for (int i = 0; i < 8; ++i) {
 			d3 = originalCorners3D[i].product(endMatrix);
 			corners3D[i] = d3;
 			d2 = d3.product(to2DMatrix);
+			System.out.println("Corner: " + i + ", 3D: " + d3 + "\n           2D: " + d2);
 			corner = corners2D[i];
+			double focalPointFactor = (double) screenDistance / (screenDistance + brickDistance + d3.data[2]);
 			corner[0] = (int) (focalPointFactor * d2.data[0]);
 			corner[1] = (int) (focalPointFactor * d2.data[1]);
+			System.out.println("x: " + corner[0] + " y: " + corner[1]);
 		}
 	}
 
 	public void recalc() {
 		endMatrix = transform.product(rotX.product(rotY.product(rotZ.product(scale))));
+		System.out.println("    scale: " + scale);
+		System.out.println("     rotZ: " + rotZ);
+		System.out.println("     rotY: " + rotY);
+		System.out.println("     rotX: " + rotX);
+		System.out.println("transform: " + transform);
+		System.out.println("endMatrix: " + endMatrix);
 		calcCorners();
 		// TODO: określanie które ściany mają być widoczne?
 	}
@@ -145,10 +161,8 @@ public class Brick implements TransformsChangeNotifyer {
 	}
 
 	public void setTransform(int which, double value) {
-		int index = index(which);
-		if (index >= 0) {
-			transform.data[index][3] = value;
-		}
+		transform.data[index(which)][3] = value;
+
 	}
 
 	public void setAngle(int which, double value) {

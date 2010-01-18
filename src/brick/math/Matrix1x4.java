@@ -28,5 +28,14 @@ public class Matrix1x4 {
 		}
 		return new Matrix1x4(tmpdata);
 	}
+
+	@Override
+	public String toString() {
+		String str = "[ ";
+		for(double i: data) {
+			str += i + " ";
+		}
+		return str + "]";
+	}
 	
 }

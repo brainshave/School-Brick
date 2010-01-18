@@ -15,7 +15,7 @@ import javax.swing.JPanel;
  */
 public class RenderPanel extends JPanel {
 
-	protected Brick brick;
+	protected Brick brick = null;
 
 	public Brick getBrick() {
 		return brick;
@@ -27,7 +27,11 @@ public class RenderPanel extends JPanel {
 
 	@Override
 	public void paintComponent(Graphics g) {
-		brick.paint((Graphics2D) g, this.getWidth(), this.getHeight());
+		if (g != null && this != null) {
+			g.clearRect(0, 0, this.getWidth(), this.getHeight());
+		}
+		if (brick != null) {
+			brick.paint((Graphics2D) g, this.getWidth(), this.getHeight());
+		}
 	}
-
 }
