@@ -131,6 +131,7 @@ public class BrickFrame extends javax.swing.JFrame {
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.EAST);
 
         renderPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        renderPanel.setBrick(getBrick());
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), renderPanel, org.jdesktop.beansbinding.BeanProperty.create("brick"));
         bindingGroup.addBinding(binding);
@@ -145,6 +146,8 @@ public class BrickFrame extends javax.swing.JFrame {
 	private void viewChanged(java.awt.event.AdjustmentEvent evt) {//GEN-FIRST:event_viewChanged
 		brick.setBrickDistance(objectDictanceScrollBar.getValue());
 		brick.setScreenDistance(screenDistanceScrollBar.getValue());
+		brick.recalc();
+		renderPanel.repaint();
 	}//GEN-LAST:event_viewChanged
 
     /**

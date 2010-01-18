@@ -49,36 +49,47 @@ public class Brick implements TransformsChangeNotifyer {
 	Wall[] walls;
 	private static final double SIZE = 1;
 	private static final double[][] CORNERS = {
-		/* 0 */ {-SIZE, SIZE, SIZE, 1},
+		/* 0 */{-SIZE, SIZE, SIZE, 1},
 		/* 1 */ {-SIZE, SIZE, -SIZE, 1},
 		/* 2 */ {SIZE, SIZE, -SIZE, 1},
 		/* 3 */ {SIZE, SIZE, SIZE, 1},
 		/* 4 */ {-SIZE, -SIZE, SIZE, 1},
-		/* 5 */ {-SIZE,-SIZE,-SIZE, 1},
+		/* 5 */ {-SIZE, -SIZE, -SIZE, 1},
 		/* 6 */ {SIZE, -SIZE, -SIZE, 1},
 		/* 7 */ {SIZE, -SIZE, SIZE, 1}
 	};
 	private final Matrix1x4[] originalCorners3D = new Matrix1x4[8];
 	private final Matrix1x4[] corners3D = new Matrix1x4[8];
 	private final int[][] corners2D = new int[8][2];
-	//private
 	final boolean[] visible = {true, true, true, true, true, true};
 
 	public Brick() {
-		System.out.println("Tworze kostke" );
-		for(int i = 0; i < 8; ++i) {
+		System.out.println("Tworze kostke");
+		for (int i = 0; i < 8; ++i) {
 			originalCorners3D[i] = new Matrix1x4(CORNERS[i]);
 		}
+		Wall[] tmpWalls = {new Wall(), new Wall(), new Wall(), new Wall(), new Wall(), new Wall()};
+		setWalls(tmpWalls);
 	}
 
 	public void setWalls(Wall[] walls) {
-		if(walls == null) return;
+		if (walls == null) {
+			return;
+		}
 
 		if (walls.length != 6) {
 			throw new ArrayIndexOutOfBoundsException("Wrong number of walls: " + walls.length);
 		}
-		
+
 		this.walls = walls;
+		/*     0---3
+		 *     | 4 |
+		 * 0---1---2---3---0
+		 * | 0 | 1 | 2 | 3 |
+		 * 4---5---6---7---4
+		 *	   | 5 |
+		 *     4---7
+		 */
 		walls[0].setCorners(corners2D[0], corners2D[1], corners2D[4], corners2D[5]);
 		walls[1].setCorners(corners2D[1], corners2D[2], corners2D[5], corners2D[6]);
 		walls[2].setCorners(corners2D[2], corners2D[3], corners2D[6], corners2D[7]);
@@ -87,10 +98,10 @@ public class Brick implements TransformsChangeNotifyer {
 		walls[5].setCorners(corners2D[5], corners2D[6], corners2D[4], corners2D[7]);
 	}
 
-	public void paint(Graphics2D g) {
+	public void paint(Graphics2D g, int width, int height) {
 		for (int i = 0; i < 6; ++i) {
 			if (visible[i]) {
-				walls[i].paint(g);
+				walls[i].paint(g, width, height);
 			}
 		}
 	}
@@ -99,7 +110,7 @@ public class Brick implements TransformsChangeNotifyer {
 		Matrix1x4 d3, d2;
 		int[] corner;
 		double focalPointFactor = (double) screenDistance / (screenDistance + brickDistance);
-		for(int i = 0; i < 8; ++i) {
+		for (int i = 0; i < 8; ++i) {
 			d3 = originalCorners3D[i].product(endMatrix);
 			corners3D[i] = d3;
 			d2 = d3.product(to2DMatrix);
@@ -109,7 +120,7 @@ public class Brick implements TransformsChangeNotifyer {
 		}
 	}
 
-	private void recalc() {
+	public void recalc() {
 		endMatrix = transform.product(rotX.product(rotY.product(rotZ.product(scale))));
 		calcCorners();
 		// TODO: określanie które ściany mają być widoczne?
@@ -138,7 +149,6 @@ public class Brick implements TransformsChangeNotifyer {
 		if (index >= 0) {
 			transform.data[index][3] = value;
 		}
-		recalc();
 	}
 
 	public void setAngle(int which, double value) {
@@ -148,30 +158,30 @@ public class Brick implements TransformsChangeNotifyer {
 		switch (which) {
 			case X: {
 				double[][] tmp = {
-					{1f, 0f, 0f, 0f},
-					{0f, cos, sin, 0f},
-					{0f, -sin, cos, 0f},
-					{0f, 0f, 0f, 1f}
+					{1, 0, 0, 0},
+					{0, cos, sin, 0},
+					{0, -sin, cos, 0},
+					{0, 0, 0, 1}
 				};
 				rotX.data = tmp;
 				break;
 			}
 			case Y: {
 				double[][] tmp = {
-					{cos, 0f, -sin, 0f},
-					{0f, 1f, 0f, 0f},
-					{sin, 0f, cos, 0f},
-					{0f, 0f, 0f, 1f}
+					{cos, 0, -sin, 0},
+					{0, 1, 0, 0},
+					{sin, 0, cos, 0},
+					{0, 0, 0, 1}
 				};
 				rotY.data = tmp;
 				break;
 			}
 			case Z: {
 				double[][] tmp = {
-					{cos, sin, 0f, 0f},
-					{-sin, cos, 0f, 0f},
-					{0f, 0f, 0f, 1f, 0f},
-					{0f, 0f, 0f, 0f, 1f}
+					{cos, sin, 0, 0},
+					{-sin, cos, 0, 0},
+					{0, 0, 0, 1, 0},
+					{0, 0, 0, 0, 1}
 				};
 				rotZ.data = tmp;
 				break;
@@ -200,10 +210,9 @@ public class Brick implements TransformsChangeNotifyer {
 	}
 
 	public void setScreenDistance(int screenDistance) {
-		System.out.println("Brick Distance: " + screenDistance);
 		this.screenDistance = screenDistance;
 		to2DMatrix.data[3][2] = 1d / screenDistance;
-		
+
 	}
 	protected int brickDistance = 5;
 
@@ -212,8 +221,6 @@ public class Brick implements TransformsChangeNotifyer {
 	}
 
 	public void setBrickDistance(int brickDistance) {
-		System.out.println("Brick Distance: " + brickDistance);
 		this.brickDistance = brickDistance;
 	}
-
 }

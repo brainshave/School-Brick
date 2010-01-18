@@ -35,4 +35,6 @@ public interface TransformsChangeNotifyer {
 	 */
 	public void setScale(int which, double value);
 
+	public void recalc();
+
 }

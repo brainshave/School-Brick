@@ -169,6 +169,9 @@
             <LineBorder/>
           </Border>
         </Property>
+        <Property name="brick" type="brick.math.Brick" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="getBrick()" type="code"/>
+        </Property>
       </Properties>
       <BindingProperties>
         <BindingProperty name="brick" source="Form" sourcePath="${brick}" target="renderPanel" targetPath="brick" updateStrategy="1" immediately="false"/>

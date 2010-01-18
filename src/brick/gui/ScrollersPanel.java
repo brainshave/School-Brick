@@ -165,6 +165,7 @@ public class ScrollersPanel extends javax.swing.JPanel {
 			abstractBrick.setAngle(axis, angleScrollBar.getValue());
 			abstractBrick.setScale(axis, (double)scaleScrollBar.getValue() / 100);
 			abstractBrick.setTransform(axis, positionScrollBar.getValue() / 100);
+			abstractBrick.recalc();
 		}
 	}//GEN-LAST:event_anyScrollBarMoved
 

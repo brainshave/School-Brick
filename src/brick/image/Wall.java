@@ -21,6 +21,8 @@ public class Wall {
 	private int[][] images;
 	private int actualImage = 0;
 
+	public Wall(){}
+
 	public Wall(int[][] images) {
 		if (images.length == 0) {
 			throw new ArrayIndexOutOfBoundsException("There must be at least one image per wall.");
@@ -38,14 +40,14 @@ public class Wall {
 		corners[3] = c3;
 	}
 
-	public void paint(Graphics2D g) {
+	public void paint(Graphics2D g, int width, int height) {
 		// rysowanie samych kontur, póki co.
 		for (int i = 0; i < 4; ++i) {
 			int j = i + 1;
-			if (j > 4) {
+			if (j >= 4) {
 				j = 0;
 			}
-			g.drawLine(corners[i][0], corners[i][1], corners[j][0], corners[j][1]);
+			g.drawLine(corners[i][0] + width/2, corners[i][1]+ width/2, corners[j][0]+height/2, corners[j][1]+ height/2);
 		}
 	}
 
