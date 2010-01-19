@@ -4,7 +4,9 @@
  */
 package brick.image;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 
 /**
  * Klasa przechowująca informację o obrazkach umieszczonych na tej ścianie
@@ -18,10 +20,14 @@ public class Wall {
 
 	private int[][] corners = new int[4][];
 	private int[] brightnesses = new int[4]; // 0-255
-	private int[][] images;
+	private int[][] images = null;
 	private int actualImage = 0;
 
 	public Wall(){}
+
+	public Wall(Color color) {
+		this.color = color;
+	}
 
 	public Wall(int[][] images) {
 		if (images.length == 0) {
@@ -43,13 +49,15 @@ public class Wall {
 	public void paint(Graphics2D g, int width, int height) {
 		// rysowanie samych kontur, póki co.
 		//{Geometrical-debug} System.out.println("Painting " + this);
-		for (int i = 0; i < 4; ++i) {
-			int j = i + 1;
-			if (j >= 4) {
-				j = 0;
-			}
-			g.drawLine(corners[i][0] + width/2, corners[i][1]+height/2, corners[j][0]+ width/2, corners[j][1]+ height/2);
+		Polygon p = new Polygon();
+		for(int[] c: corners) {
+			p.addPoint(c[0] + width/2, c[1] + height/2);
 		}
+		g.setColor(color);
+		g.fillPolygon(p);
+
+		g.setColor(Color.BLACK);
+		g.drawPolygon(p);
 	}
 
 	public void paintRect(Graphics2D g, int x, int y, int width, int height) {
@@ -67,4 +75,14 @@ public class Wall {
 		str += "}";
 		return str;
 	}
+	protected Color color = Color.BLUE;
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
 }

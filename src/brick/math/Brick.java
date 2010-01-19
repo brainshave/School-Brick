@@ -6,6 +6,7 @@ package brick.math;
 
 import brick.image.TransformsChangeNotifyer;
 import brick.image.Wall;
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 /**
@@ -69,7 +70,7 @@ public class Brick implements TransformsChangeNotifyer {
 			originalCorners3D[i] = new Matrix1x4(CORNERS[i]);
 		}
 		to2DMatrix.data[2][2] = 0;
-		Wall[] tmpWalls = {new Wall(), new Wall(), new Wall(), new Wall(), new Wall(), new Wall()};
+		Wall[] tmpWalls = {new Wall(Color.BLUE), new Wall(Color.CYAN), new Wall(Color.GREEN), new Wall(Color.MAGENTA), new Wall(Color.ORANGE), new Wall(Color.YELLOW)};
 		setWalls(tmpWalls);
 		recalc();
 	}
