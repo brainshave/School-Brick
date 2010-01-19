@@ -42,7 +42,7 @@ public class Wall {
 
 	public void paint(Graphics2D g, int width, int height) {
 		// rysowanie samych kontur, póki co.
-		System.out.println("Painting " + this);
+		//{Geometrical-debug} System.out.println("Painting " + this);
 		for (int i = 0; i < 4; ++i) {
 			int j = i + 1;
 			if (j >= 4) {

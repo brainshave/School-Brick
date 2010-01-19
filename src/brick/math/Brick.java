@@ -64,7 +64,7 @@ public class Brick implements TransformsChangeNotifyer {
 	final boolean[] visible = {true, true, true, true, true, true};
 
 	public Brick() {
-		System.out.println("Tworze kostke");
+		//{Geometrical-debug} System.out.println("Tworze kostke");
 		for (int i = 0; i < 8; ++i) {
 			originalCorners3D[i] = new Matrix1x4(CORNERS[i]);
 		}
@@ -121,23 +121,23 @@ public class Brick implements TransformsChangeNotifyer {
 			d3 = originalCorners3D[i].product(endMatrix);
 			corners3D[i] = d3;
 			d2 = d3.product(to2DMatrix);
-			System.out.println("Corner: " + i + ", 3D: " + d3 + "\n           2D: " + d2);
+			//{Geometrical-debug} System.out.println("Corner: " + i + ", 3D: " + d3 + "\n           2D: " + d2);
 			corner = corners2D[i];
 			double focalPointFactor = (double) screenDistance / (screenDistance + brickDistance + d3.data[2]);
 			corner[0] = (int) (focalPointFactor * d2.data[0]);
 			corner[1] = (int) (focalPointFactor * d2.data[1]);
-			System.out.println("x: " + corner[0] + " y: " + corner[1]);
+			//{Geometrical-debug} System.out.println("x: " + corner[0] + " y: " + corner[1]);
 		}
 	}
 
 	public void recalc() {
 		endMatrix = transform.product(rotX.product(rotY.product(rotZ.product(scale))));
-		System.out.println("    scale: " + scale);
-		System.out.println("     rotZ: " + rotZ);
-		System.out.println("     rotY: " + rotY);
-		System.out.println("     rotX: " + rotX);
-		System.out.println("transform: " + transform);
-		System.out.println("endMatrix: " + endMatrix);
+		//{Geometrical-debug} System.out.println("    scale: " + scale);
+		//{Geometrical-debug} System.out.println("     rotZ: " + rotZ);
+		//{Geometrical-debug} System.out.println("     rotY: " + rotY);
+		//{Geometrical-debug} System.out.println("     rotX: " + rotX);
+		//{Geometrical-debug} System.out.println("transform: " + transform);
+		//{Geometrical-debug} System.out.println("endMatrix: " + endMatrix);
 		calcCorners();
 		// TODO: określanie które ściany mają być widoczne?
 	}

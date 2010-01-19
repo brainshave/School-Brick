@@ -32,10 +32,6 @@ public class Main {
 	}
 
 	static public void main(String[] args) {
-		int [][] a = new int[2][2];
-		int[] b = a[0];
-		a[0][0] = 10;
-		System.out.println(b[0]);
 
 		java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
