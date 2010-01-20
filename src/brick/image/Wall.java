@@ -54,7 +54,7 @@ public class Wall {
 			p.addPoint(c[0] + width/2, c[1] + height/2);
 		}
 		g.setColor(color);
-		g.fillPolygon(p);
+		//g.fillPolygon(p);
 
 		g.setColor(Color.BLACK);
 		g.drawPolygon(p);

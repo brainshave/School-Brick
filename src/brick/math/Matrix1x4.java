@@ -28,6 +28,13 @@ public class Matrix1x4 {
 		}
 		return new Matrix1x4(tmpdata);
 	}
+	public Matrix1x4 sum(Matrix1x4 other) {
+		Matrix1x4 m = new Matrix1x4();
+		for(int i = 0; i < 4; ++i) {
+			m.data[i] = this.data[i] + other.data[i];
+		}
+		return m;
+	}
 
 	@Override
 	public String toString() {

@@ -160,7 +160,6 @@ public class ScrollersPanel extends javax.swing.JPanel {
 	}//GEN-LAST:event_positionResetButtonActionPerformed
 
 	private void anyScrollBarMoved(java.awt.event.AdjustmentEvent evt) {//GEN-FIRST:event_anyScrollBarMoved
-		// TODO add your handling code here:
 		if(abstractBrick != null) {
 			abstractBrick.setAngle(axis, angleScrollBar.getValue());
 			double scale = scaleScrollBar.getValue();

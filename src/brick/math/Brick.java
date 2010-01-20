@@ -50,7 +50,7 @@ public class Brick implements TransformsChangeNotifyer {
 	Wall[] walls;
 	private static final double SIZE = 100;
 	private static final double[][] CORNERS = {
-		/* 0 */{-SIZE, SIZE, SIZE, 1},
+		/* 0 */ {-SIZE, SIZE, SIZE, 1},
 		/* 1 */ {-SIZE, SIZE, -SIZE, 1},
 		/* 2 */ {SIZE, SIZE, -SIZE, 1},
 		/* 3 */ {SIZE, SIZE, SIZE, 1},
@@ -59,10 +59,24 @@ public class Brick implements TransformsChangeNotifyer {
 		/* 6 */ {SIZE, -SIZE, -SIZE, 1},
 		/* 7 */ {SIZE, -SIZE, SIZE, 1}
 	};
+	
+	/**
+	 * Mapowanie rogów dla konkretnych ścian
+	 */
+	private static final int[][] CORNERS_TO_WALLS = {
+		/* 0 */ {0, 1, 5, 4},
+		/* 1 */ {1, 2, 6, 5},
+		/* 2 */ {2, 3, 7, 6},
+		/* 3 */ {3, 0, 4, 7},
+		/* 4 */ {0, 3, 2, 1},
+		/* 5 */ {5, 6, 7, 4}
+	};
 	private final Matrix1x4[] originalCorners3D = new Matrix1x4[8];
 	private final Matrix1x4[] corners3D = new Matrix1x4[8];
 	private final int[][] corners2D = new int[8][2];
-	final boolean[] visible = {true, true, true, true, true, true};
+
+	private final Vector[] vectors = new Vector[6];
+	private final boolean[] visible = {true, true, true, true, true, true};
 
 	public Brick() {
 		//{Geometrical-debug} System.out.println("Tworze kostke");
@@ -93,12 +107,11 @@ public class Brick implements TransformsChangeNotifyer {
 		 *	   | 5 |
 		 *     4---7
 		 */
-		walls[0].setCorners(corners2D[0], corners2D[1], corners2D[5], corners2D[4]);
-		walls[1].setCorners(corners2D[1], corners2D[2], corners2D[6], corners2D[5]);
-		walls[2].setCorners(corners2D[2], corners2D[3], corners2D[7], corners2D[6]);
-		walls[3].setCorners(corners2D[3], corners2D[0], corners2D[4], corners2D[7]);
-		walls[4].setCorners(corners2D[0], corners2D[3], corners2D[2], corners2D[1]);
-		walls[5].setCorners(corners2D[5], corners2D[6], corners2D[7], corners2D[4]);
+		for(int w = 0; w < 6; ++w) {
+			for(int c = 0; c < 4; ++c) {
+				walls[w].setCorner(c, corners2D[CORNERS_TO_WALLS[w][c]]);
+			}
+		}
 	}
 
 	public void paint(Graphics2D g, int width, int height) {
@@ -131,6 +144,26 @@ public class Brick implements TransformsChangeNotifyer {
 		}
 	}
 
+	private void determineVisibleWalls() {
+		/*
+		 * obliczamy wersory normalne dla trzech scian:
+		 *   0,  1  i  5
+		 * odpowiednio wersory [rogi]:
+		 * 6-5, 4-5, 1-5
+		 * dla reszty po prostu odwracamy wersory:
+		 * 0:2, 1:3, 5:4
+		 */
+		vectors[0] = new Vector(corners3D[6], corners3D[5]).normalize();
+		vectors[1] = new Vector(corners3D[4], corners3D[5]).normalize();
+		vectors[5] = new Vector(corners3D[1], corners3D[5]).normalize();
+		vectors[2] = vectors[0].invert();
+		vectors[3] = vectors[1].invert();
+		vectors[4] = vectors[5].invert();
+		/**
+		 * 
+		 */
+	}
+
 	public void recalc() {
 		endMatrix = transform.product(rotX.product(rotY.product(rotZ.product(scale))));
 		//{Geometrical-debug} System.out.println("    scale: " + scale);
@@ -140,7 +173,7 @@ public class Brick implements TransformsChangeNotifyer {
 		//{Geometrical-debug} System.out.println("transform: " + transform);
 		//{Geometrical-debug} System.out.println("endMatrix: " + endMatrix);
 		calcCorners();
-		// TODO: określanie które ściany mają być widoczne?
+		determineVisibleWalls();
 	}
 
 	private int index(int which) {

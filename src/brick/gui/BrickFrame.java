@@ -48,6 +48,7 @@ public class BrickFrame extends javax.swing.JFrame {
         renderPanel = new brick.gui.RenderPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("SW-Brick");
         setMinimumSize(new java.awt.Dimension(800, 600));
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
