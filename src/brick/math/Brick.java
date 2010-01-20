@@ -59,9 +59,10 @@ public class Brick implements TransformsChangeNotifyer {
 		/* 6 */ {SIZE, -SIZE, -SIZE, 1},
 		/* 7 */ {SIZE, -SIZE, SIZE, 1}
 	};
-	
+
 	/**
-	 * Mapowanie rogów dla konkretnych ścian
+	 * Mapowanie rogow dla konkretnych scian
+	 * Dla kazdej sciany po 4 rogi
 	 */
 	private static final int[][] CORNERS_TO_WALLS = {
 		/* 0 */ {0, 1, 5, 4},
@@ -74,8 +75,8 @@ public class Brick implements TransformsChangeNotifyer {
 	private final Matrix1x4[] originalCorners3D = new Matrix1x4[8];
 	private final Matrix1x4[] corners3D = new Matrix1x4[8];
 	private final int[][] corners2D = new int[8][2];
-
-	private final Vector[] vectors = new Vector[6];
+	//private final Vector[] fromViewToCornersVectors = new Vector[8];
+	private final Vector[] wallVectors = new Vector[6];
 	private final boolean[] visible = {true, true, true, true, true, true};
 
 	public Brick() {
@@ -84,7 +85,7 @@ public class Brick implements TransformsChangeNotifyer {
 			originalCorners3D[i] = new Matrix1x4(CORNERS[i]);
 		}
 		to2DMatrix.data[2][2] = 0;
-		Wall[] tmpWalls = {new Wall(Color.BLUE), new Wall(Color.CYAN), new Wall(Color.GREEN), new Wall(Color.MAGENTA), new Wall(Color.ORANGE), new Wall(Color.YELLOW)};
+		Wall[] tmpWalls = {new Wall(Color.BLUE, 0), new Wall(Color.CYAN,1), new Wall(Color.GREEN,2), new Wall(Color.MAGENTA,3), new Wall(Color.ORANGE,4), new Wall(Color.YELLOW,5)};
 		setWalls(tmpWalls);
 		recalc();
 	}
@@ -107,8 +108,8 @@ public class Brick implements TransformsChangeNotifyer {
 		 *	   | 5 |
 		 *     4---7
 		 */
-		for(int w = 0; w < 6; ++w) {
-			for(int c = 0; c < 4; ++c) {
+		for (int w = 0; w < 6; ++w) {
+			for (int c = 0; c < 4; ++c) {
 				walls[w].setCorner(c, corners2D[CORNERS_TO_WALLS[w][c]]);
 			}
 		}
@@ -120,17 +121,12 @@ public class Brick implements TransformsChangeNotifyer {
 				walls[i].paint(g, width, height);
 			}
 		}
-//		for (int[] c1 : corners2D) {
-//			for(int[] c2: corners2D) {
-//				g.drawLine(c1[0] + width/2, c1[1] + height/2, c2[0] + width/2, c2[1] + height/2);
-//			}
-//		}
 	}
 
 	private void calcCorners() {
 		Matrix1x4 d3, d2;
 		int[] corner;
-		
+
 		for (int i = 0; i < 8; ++i) {
 			d3 = originalCorners3D[i].product(endMatrix);
 			corners3D[i] = d3;
@@ -138,6 +134,9 @@ public class Brick implements TransformsChangeNotifyer {
 			//{Geometrical-debug} System.out.println("Corner: " + i + ", 3D: " + d3 + "\n           2D: " + d2);
 			corner = corners2D[i];
 			double focalPointFactor = (double) screenDistance / (screenDistance + brickDistance + d3.data[2]);
+			if (focalPointFactor < 0) {
+				focalPointFactor = -focalPointFactor;
+			}
 			corner[0] = (int) (focalPointFactor * d2.data[0]);
 			corner[1] = (int) (focalPointFactor * d2.data[1]);
 			//{Geometrical-debug} System.out.println("x: " + corner[0] + " y: " + corner[1]);
@@ -153,15 +152,34 @@ public class Brick implements TransformsChangeNotifyer {
 		 * dla reszty po prostu odwracamy wersory:
 		 * 0:2, 1:3, 5:4
 		 */
-		vectors[0] = new Vector(corners3D[6], corners3D[5]).normalize();
-		vectors[1] = new Vector(corners3D[4], corners3D[5]).normalize();
-		vectors[5] = new Vector(corners3D[1], corners3D[5]).normalize();
-		vectors[2] = vectors[0].invert();
-		vectors[3] = vectors[1].invert();
-		vectors[4] = vectors[5].invert();
+		wallVectors[0] = new Vector(corners3D[6], corners3D[5]).normalize();
+		wallVectors[1] = new Vector(corners3D[4], corners3D[5]).normalize();
+		wallVectors[5] = new Vector(corners3D[1], corners3D[5]).normalize();
+		wallVectors[2] = wallVectors[0].invert();
+		wallVectors[3] = wallVectors[1].invert();
+		wallVectors[4] = wallVectors[5].invert();
 		/**
-		 * 
+		 * obliczamy katy dla kazdej sciany w kazdym rogu
+		 * najpierw wersory normalne z punktu widzenia uzytkownika dla każdego rogu:
 		 */
+		Matrix1x4 viewer = new Matrix1x4(0, 0, - screenDistance - brickDistance, 0);
+//		for (int i = 0; i < 8; ++i) {
+//			fromViewToCornersVectors[i] = new Vector(viewer, corners3D[i]).normalize();
+//		}
+		for (int w = 0; w < 6; ++w) {
+			Vector v = new Vector(viewer, corners3D[CORNERS_TO_WALLS[w][0]]).normalize();
+			double cos = v.cosNorm(wallVectors[w]);
+			visible[w] = cos < 0;
+//			visible[w] = false;
+//			for(int c: CORNERS_TO_WALLS[w]) {
+//				double cos = fromViewToCornersVectors[c].cosNorm(wallVectors[w]);
+//				//System.out.print(" " + cos);
+//				if(cos < 0) {
+//					visible[w] = true;
+//					break;
+//				}
+//			}
+		}
 	}
 
 	public void recalc() {
@@ -242,9 +260,9 @@ public class Brick implements TransformsChangeNotifyer {
 
 	public void setScale(int which, double value) {
 		int index = index(which);
-		
+
 		scale.data[index][index] = value;
-		
+
 		//recalc();
 	}
 

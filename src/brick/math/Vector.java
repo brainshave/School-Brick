@@ -22,6 +22,12 @@ public class Vector extends Matrix1x4 {
 			data[i] = to.data[i] - from.data[i];
 		}
 	}
+
+	public Vector(double a, double b, double c, double d) {
+		super(a, b, c, d);
+	}
+
+	
 	/**
 	 *
 	 * @return self!
@@ -61,5 +67,14 @@ public class Vector extends Matrix1x4 {
 		tmp.data[3] = tmp.data[3];
 		tmp.normFactor = normFactor;
 		return tmp;
+	}
+
+	/**
+	 * Oblicza cos miedzy tym a tamtym wektorem, oba musza byc znormalizowane.
+	 * @param other
+	 * @return
+	 */
+	public double cosNorm(Vector other) {
+		return data[0] * other.data[0] + data[1] * other.data[1] + data[2] * other.data[2];
 	}
 }

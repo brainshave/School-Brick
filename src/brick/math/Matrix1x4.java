@@ -19,6 +19,12 @@ public class Matrix1x4 {
 	public Matrix1x4(double[] data) {
 		this.data = data;
 	}
+
+	public Matrix1x4(double a, double b, double c, double d) {
+		double[] tmpdata = {a, b, c, d};
+		this.data = tmpdata;
+	}
+
 	public Matrix1x4 product(Matrix4x4 other) {
 		double[] tmpdata = new double[4];
 		for(int col = 0; col < 4; ++col) {

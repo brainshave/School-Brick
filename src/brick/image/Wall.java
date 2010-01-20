@@ -22,11 +22,13 @@ public class Wall {
 	private int[] brightnesses = new int[4]; // 0-255
 	private int[][] images = null;
 	private int actualImage = 0;
+	private int num = -1;
 
 	public Wall(){}
 
-	public Wall(Color color) {
+	public Wall(Color color, int num) {
 		this.color = color;
+		this.num = num;
 	}
 
 	public Wall(int[][] images) {
@@ -53,11 +55,20 @@ public class Wall {
 		for(int[] c: corners) {
 			p.addPoint(c[0] + width/2, c[1] + height/2);
 		}
-		g.setColor(color);
-		//g.fillPolygon(p);
+		g.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 50));
+		g.fillPolygon(p);
 
 		g.setColor(Color.BLACK);
 		g.drawPolygon(p);
+		int avgX = 0;
+		int avgY = 0;
+		for(int[] c : corners) {
+			avgX += c[0];
+			avgY += c[1];
+		}
+		avgX /= 4;
+		avgY /= 4;
+		g.drawString(String.valueOf(num), avgX + width/2, avgY + height/2);
 	}
 
 	public void paintRect(Graphics2D g, int x, int y, int width, int height) {
