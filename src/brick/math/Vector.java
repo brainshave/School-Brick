@@ -29,8 +29,9 @@ public class Vector extends Matrix1x4 {
 
 	
 	/**
-	 *
-	 * @return self!
+	 * Normalize this vector, reversable via denormalize(), function returns
+	 * <b>this</b> for chaining methods.
+	 * @return this
 	 */
 	public Vector normalize() {
 		// przelicznik normalizacji:
@@ -42,9 +43,11 @@ public class Vector extends Matrix1x4 {
 		data[3] = normFactor;
 		return this;
 	}
+
 	/**
-	 *
-	 * @return self!
+	 * Reverse Normalization. No effect if normalize() was not previously
+	 * called. Returns <b>this</b> for chaining methods.
+	 * @return this
 	 */
 	public Vector denormalize() {
 		data[0] /= normFactor;
@@ -59,6 +62,10 @@ public class Vector extends Matrix1x4 {
 		return Math.sqrt(data[0] * data[0] + data[1] * data[1] + data[2] * data[2]);
 	}
 
+	/**
+	 * Get new Vector in opposite direction.
+	 * @return
+	 */
 	public Vector invert() {
 		Vector tmp = new Vector();
 		for (int i = 0; i < 3; ++i) {
@@ -70,7 +77,7 @@ public class Vector extends Matrix1x4 {
 	}
 
 	/**
-	 * Oblicza cos miedzy tym a tamtym wektorem, oba musza byc znormalizowane.
+	 * Calculates cos for two <b>normalized</b> vectors.
 	 * @param other
 	 * @return
 	 */

@@ -203,26 +203,5 @@ public class BrickFrame extends javax.swing.JFrame {
 	public void setBrick(Brick brick) {
 		this.brick = brick;
 	}
-//	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-//
-//	/**
-//	 * Add PropertyChangeListener.
-//	 *
-//	 * @param listener
-//	 */
-//	@Override
-//	public void addPropertyChangeListener(PropertyChangeListener listener) {
-//		propertyChangeSupport.addPropertyChangeListener(listener);
-//	}
-//
-//	/**
-//	 * Remove PropertyChangeListener.
-//	 *
-//	 * @param listener
-//	 */
-//	@Override
-//	public void removePropertyChangeListener(PropertyChangeListener listener) {
-//		propertyChangeSupport.removePropertyChangeListener(listener);
-//	}
 
 }

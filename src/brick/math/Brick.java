@@ -50,7 +50,7 @@ public class Brick implements TransformsChangeNotifyer {
 	Wall[] walls;
 	private static final double SIZE = 100;
 	private static final double[][] CORNERS = {
-		/* 0 */ {-SIZE, SIZE, SIZE, 1},
+		/* 0 */{-SIZE, SIZE, SIZE, 1},
 		/* 1 */ {-SIZE, SIZE, -SIZE, 1},
 		/* 2 */ {SIZE, SIZE, -SIZE, 1},
 		/* 3 */ {SIZE, SIZE, SIZE, 1},
@@ -59,13 +59,12 @@ public class Brick implements TransformsChangeNotifyer {
 		/* 6 */ {SIZE, -SIZE, -SIZE, 1},
 		/* 7 */ {SIZE, -SIZE, SIZE, 1}
 	};
-
 	/**
 	 * Mapowanie rogow dla konkretnych scian
 	 * Dla kazdej sciany po 4 rogi
 	 */
 	private static final int[][] CORNERS_TO_WALLS = {
-		/* 0 */ {0, 1, 5, 4},
+		/* 0 */{0, 1, 5, 4},
 		/* 1 */ {1, 2, 6, 5},
 		/* 2 */ {2, 3, 7, 6},
 		/* 3 */ {3, 0, 4, 7},
@@ -75,7 +74,6 @@ public class Brick implements TransformsChangeNotifyer {
 	private final Matrix1x4[] originalCorners3D = new Matrix1x4[8];
 	private final Matrix1x4[] corners3D = new Matrix1x4[8];
 	private final int[][] corners2D = new int[8][2];
-	//private final Vector[] fromViewToCornersVectors = new Vector[8];
 	private final Vector[] wallVectors = new Vector[6];
 	private final boolean[] visible = {true, true, true, true, true, true};
 
@@ -85,7 +83,7 @@ public class Brick implements TransformsChangeNotifyer {
 			originalCorners3D[i] = new Matrix1x4(CORNERS[i]);
 		}
 		to2DMatrix.data[2][2] = 0;
-		Wall[] tmpWalls = {new Wall(Color.BLUE, 0), new Wall(Color.CYAN,1), new Wall(Color.GREEN,2), new Wall(Color.MAGENTA,3), new Wall(Color.ORANGE,4), new Wall(Color.YELLOW,5)};
+		Wall[] tmpWalls = {new Wall(Color.BLUE, 0), new Wall(Color.CYAN, 1), new Wall(Color.GREEN, 2), new Wall(Color.MAGENTA, 3), new Wall(Color.ORANGE, 4), new Wall(Color.YELLOW, 5)};
 		setWalls(tmpWalls);
 		recalc();
 	}
@@ -99,15 +97,8 @@ public class Brick implements TransformsChangeNotifyer {
 			throw new ArrayIndexOutOfBoundsException("Wrong number of walls: " + walls.length);
 		}
 
+		// ustawianie rogow dla sician z tabeli CORNERS_TO_WALLS
 		this.walls = walls;
-		/*     0---3
-		 *     | 4 |
-		 * 0---1---2---3---0
-		 * | 0 | 1 | 2 | 3 |
-		 * 4---5---6---7---4
-		 *	   | 5 |
-		 *     4---7
-		 */
 		for (int w = 0; w < 6; ++w) {
 			for (int c = 0; c < 4; ++c) {
 				walls[w].setCorner(c, corners2D[CORNERS_TO_WALLS[w][c]]);
@@ -123,6 +114,9 @@ public class Brick implements TransformsChangeNotifyer {
 		}
 	}
 
+	/**
+	 * Oblicza rzeczywiste polozenie rogow po wszystkich transformacjach
+	 */
 	private void calcCorners() {
 		Matrix1x4 d3, d2;
 		int[] corner;
@@ -158,30 +152,26 @@ public class Brick implements TransformsChangeNotifyer {
 		wallVectors[2] = wallVectors[0].invert();
 		wallVectors[3] = wallVectors[1].invert();
 		wallVectors[4] = wallVectors[5].invert();
+
 		/**
-		 * obliczamy katy dla kazdej sciany w kazdym rogu
-		 * najpierw wersory normalne z punktu widzenia uzytkownika dla każdego rogu:
+		 * obliczamy katy prostej od punktu widzenia do sciany 
+		 * dla kazdej sciany w jednym rogu
+		 * kat miedzy wersorem normalnym sciany a wersorem poprowadzonym
+		 * od punktu widzenia musi sie zawierac miedzy 90 a 270 stopni,
+		 * czyli cos < 0
 		 */
-		Matrix1x4 viewer = new Matrix1x4(0, 0, - screenDistance - brickDistance, 0);
-//		for (int i = 0; i < 8; ++i) {
-//			fromViewToCornersVectors[i] = new Vector(viewer, corners3D[i]).normalize();
-//		}
+		Matrix1x4 viewer = new Matrix1x4(0, 0, -screenDistance - brickDistance, 0);
 		for (int w = 0; w < 6; ++w) {
 			Vector v = new Vector(viewer, corners3D[CORNERS_TO_WALLS[w][0]]).normalize();
 			double cos = v.cosNorm(wallVectors[w]);
 			visible[w] = cos < 0;
-//			visible[w] = false;
-//			for(int c: CORNERS_TO_WALLS[w]) {
-//				double cos = fromViewToCornersVectors[c].cosNorm(wallVectors[w]);
-//				//System.out.print(" " + cos);
-//				if(cos < 0) {
-//					visible[w] = true;
-//					break;
-//				}
-//			}
 		}
 	}
 
+	/**
+	 * Trzeba wywolac po uzyciu ktorejkolwiek z funkcji setAngle(),
+	 * setTransform(), setScale() i set*Distance()
+	 */
 	public void recalc() {
 		endMatrix = transform.product(rotX.product(rotY.product(rotZ.product(scale))));
 		//{Geometrical-debug} System.out.println("    scale: " + scale);
@@ -255,15 +245,12 @@ public class Brick implements TransformsChangeNotifyer {
 			default:
 				throw new ArrayIndexOutOfBoundsException("Bad axis given.");
 		}
-		//recalc();
 	}
 
 	public void setScale(int which, double value) {
 		int index = index(which);
 
 		scale.data[index][index] = value;
-
-		//recalc();
 	}
 
 	public Wall[] getWalls() {
