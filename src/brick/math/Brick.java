@@ -36,21 +36,13 @@ import java.awt.Graphics2D;
  *
  * @author Szymon
  */
-public class Brick implements TransformsChangeNotifyer {
-
-	public static double dgToRad = (double) Math.PI / 180;
+public class Brick extends AbstractTransformChangeNotifier implements TransformsChangeNotifyer {
 	public int[] buff;
-	private Matrix4x4 transform = new Matrix4x4();
-	private Matrix4x4 scale = new Matrix4x4();
-	private Matrix4x4 rotX = new Matrix4x4();
-	private Matrix4x4 rotY = new Matrix4x4();
-	private Matrix4x4 rotZ = new Matrix4x4();
-	private Matrix4x4 endMatrix = new Matrix4x4();
 	private Matrix4x4 to2DMatrix = new Matrix4x4();
 	Wall[] walls;
 	private static final double SIZE = 100;
 	private static final double[][] CORNERS = {
-		/* 0 */{-SIZE, SIZE, SIZE, 1},
+		/* 0 */ {-SIZE, SIZE, SIZE, 1},
 		/* 1 */ {-SIZE, SIZE, -SIZE, 1},
 		/* 2 */ {SIZE, SIZE, -SIZE, 1},
 		/* 3 */ {SIZE, SIZE, SIZE, 1},
@@ -64,7 +56,7 @@ public class Brick implements TransformsChangeNotifyer {
 	 * Dla kazdej sciany po 4 rogi
 	 */
 	private static final int[][] CORNERS_TO_WALLS = {
-		/* 0 */{0, 1, 5, 4},
+		/* 0 */ {0, 1, 5, 4},
 		/* 1 */ {1, 2, 6, 5},
 		/* 2 */ {2, 3, 7, 6},
 		/* 3 */ {3, 0, 4, 7},
@@ -172,8 +164,7 @@ public class Brick implements TransformsChangeNotifyer {
 	 * Trzeba wywolac po uzyciu ktorejkolwiek z funkcji setAngle(),
 	 * setTransform(), setScale() i set*Distance()
 	 */
-	public void recalc() {
-		endMatrix = transform.product(rotX.product(rotY.product(rotZ.product(scale))));
+	public void recalcThis() {
 		//{Geometrical-debug} System.out.println("    scale: " + scale);
 		//{Geometrical-debug} System.out.println("     rotZ: " + rotZ);
 		//{Geometrical-debug} System.out.println("     rotY: " + rotY);
@@ -184,74 +175,9 @@ public class Brick implements TransformsChangeNotifyer {
 		determineVisibleWalls();
 	}
 
-	private int index(int which) {
-		int index = -1;
-		switch (which) {
-			case X:
-				index = 0;
-				break;
-			case Y:
-				index = 1;
-				break;
-			case Z:
-				index = 2;
-				break;
-			default:
-				throw new ArrayIndexOutOfBoundsException("Bad axis given.");
-		}
-		return index;
-	}
+	
 
-	public void setTransform(int which, double value) {
-		transform.data[index(which)][3] = value;
-
-	}
-
-	public void setAngle(int which, double value) {
-		value *= dgToRad;
-		double sin = Math.sin(value);
-		double cos = Math.cos(value);
-		switch (which) {
-			case X: {
-				double[][] tmp = {
-					{1, 0, 0, 0},
-					{0, cos, sin, 0},
-					{0, -sin, cos, 0},
-					{0, 0, 0, 1}
-				};
-				rotX.data = tmp;
-				break;
-			}
-			case Y: {
-				double[][] tmp = {
-					{cos, 0, -sin, 0},
-					{0, 1, 0, 0},
-					{sin, 0, cos, 0},
-					{0, 0, 0, 1}
-				};
-				rotY.data = tmp;
-				break;
-			}
-			case Z: {
-				double[][] tmp = {
-					{cos, sin, 0, 0},
-					{-sin, cos, 0, 0},
-					{0, 0, 1, 0},
-					{0, 0, 0, 1}
-				};
-				rotZ.data = tmp;
-				break;
-			}
-			default:
-				throw new ArrayIndexOutOfBoundsException("Bad axis given.");
-		}
-	}
-
-	public void setScale(int which, double value) {
-		int index = index(which);
-
-		scale.data[index][index] = value;
-	}
+	
 
 	public Wall[] getWalls() {
 		return walls;

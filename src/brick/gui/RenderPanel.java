@@ -28,7 +28,9 @@ public class RenderPanel extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		if (g != null && this != null) {
-			g.clearRect(0, 0, this.getWidth(), this.getHeight());
+			
+			g.fillRect(0, 0, this.getWidth(), this.getHeight());
+			//g.clearRect(0, 0, this.getWidth(), this.getHeight());
 		}
 		if (brick != null) {
 			brick.paint((Graphics2D) g, this.getWidth(), this.getHeight());
