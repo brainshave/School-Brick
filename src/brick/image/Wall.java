@@ -24,7 +24,8 @@ public class Wall {
 	private int actualImage = 0;
 	private int num = -1;
 
-	public Wall(){}
+	public Wall() {
+	}
 
 	public Wall(Color color, int num) {
 		this.color = color;
@@ -41,7 +42,8 @@ public class Wall {
 	public void setCorner(int num, int[] c) {
 		corners[num] = c;
 	}
-	public void setCorners(int[] c0, int[] c1, int[] c2, int [] c3) {
+
+	public void setCorners(int[] c0, int[] c1, int[] c2, int[] c3) {
 		corners[0] = c0;
 		corners[1] = c1;
 		corners[2] = c2;
@@ -52,8 +54,8 @@ public class Wall {
 		// rysowanie samych kontur, póki co.
 		//{Geometrical-debug} System.out.println("Painting " + this);
 		Polygon p = new Polygon();
-		for(int[] c: corners) {
-			p.addPoint(c[0] + width/2, c[1] + height/2);
+		for (int[] c : corners) {
+			p.addPoint(c[0] + width / 2, c[1] + height / 2);
 		}
 		//g.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 50));
 		g.setColor(color);
@@ -63,13 +65,13 @@ public class Wall {
 		g.drawPolygon(p);
 		int avgX = 0;
 		int avgY = 0;
-		for(int[] c : corners) {
+		for (int[] c : corners) {
 			avgX += c[0];
 			avgY += c[1];
 		}
 		avgX /= 4;
 		avgY /= 4;
-		g.drawString(String.valueOf(num), avgX + width/2, avgY + height/2);
+		g.drawString(String.valueOf(num), avgX + width / 2, avgY + height / 2);
 	}
 
 	public void paintRect(Graphics2D g, int x, int y, int width, int height) {
@@ -81,7 +83,7 @@ public class Wall {
 	@Override
 	public String toString() {
 		String str = "{ ";
-		for(int i = 0; i < 4; ++i) {
+		for (int i = 0; i < 4; ++i) {
 			str += corners[i][0] + " " + corners[i][1] + ", ";
 		}
 		str += "}";
@@ -96,5 +98,4 @@ public class Wall {
 	public void setColor(Color color) {
 		this.color = color;
 	}
-
 }

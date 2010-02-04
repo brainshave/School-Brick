@@ -37,12 +37,12 @@ import java.awt.Graphics2D;
  * @author Szymon
  */
 public class Brick extends AbstractTransformChangeNotifier implements TransformsChangeNotifyer {
+
 	public int[] buff;
-	private Matrix4x4 to2DMatrix = new Matrix4x4();
 	Wall[] walls;
-	private static final double SIZE = 100;
+	public static final double SIZE = 100;
 	private static final double[][] CORNERS = {
-		/* 0 */ {-SIZE, SIZE, SIZE, 1},
+		/* 0 */{-SIZE, SIZE, SIZE, 1},
 		/* 1 */ {-SIZE, SIZE, -SIZE, 1},
 		/* 2 */ {SIZE, SIZE, -SIZE, 1},
 		/* 3 */ {SIZE, SIZE, SIZE, 1},
@@ -56,46 +56,22 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 	 * Dla kazdej sciany po 4 rogi
 	 */
 	private static final int[][] CORNERS_TO_WALLS = {
-		/* 0 */ {0, 1, 5, 4},
+		/* 0 */{0, 1, 5, 4},
 		/* 1 */ {1, 2, 6, 5},
 		/* 2 */ {2, 3, 7, 6},
 		/* 3 */ {3, 0, 4, 7},
 		/* 4 */ {0, 3, 2, 1},
 		/* 5 */ {5, 6, 7, 4}
 	};
-	private final Matrix1x4[] originalCorners3D = new Matrix1x4[8];
-	private final Matrix1x4[] corners3D = new Matrix1x4[8];
-	private final int[][] corners2D = new int[8][2];
 	private final Vector[] wallVectors = new Vector[6];
 	private final boolean[] visible = {true, true, true, true, true, true};
 
 	public Brick() {
+		super(CORNERS);
 		//{Geometrical-debug} System.out.println("Tworze kostke");
-		for (int i = 0; i < 8; ++i) {
-			originalCorners3D[i] = new Matrix1x4(CORNERS[i]);
-		}
-		to2DMatrix.data[2][2] = 0;
 		Wall[] tmpWalls = {new Wall(Color.BLUE, 0), new Wall(Color.CYAN, 1), new Wall(Color.GREEN, 2), new Wall(Color.MAGENTA, 3), new Wall(Color.ORANGE, 4), new Wall(Color.YELLOW, 5)};
 		setWalls(tmpWalls);
 		recalc();
-	}
-
-	public void setWalls(Wall[] walls) {
-		if (walls == null) {
-			return;
-		}
-
-		if (walls.length != 6) {
-			throw new ArrayIndexOutOfBoundsException("Wrong number of walls: " + walls.length);
-		}
-
-		// ustawianie rogow dla sician z tabeli CORNERS_TO_WALLS
-		this.walls = walls;
-		for (int w = 0; w < 6; ++w) {
-			for (int c = 0; c < 4; ++c) {
-				walls[w].setCorner(c, corners2D[CORNERS_TO_WALLS[w][c]]);
-			}
-		}
 	}
 
 	public void paint(Graphics2D g, int width, int height) {
@@ -103,29 +79,6 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 			if (visible[i]) {
 				walls[i].paint(g, width, height);
 			}
-		}
-	}
-
-	/**
-	 * Oblicza rzeczywiste polozenie rogow po wszystkich transformacjach
-	 */
-	private void calcCorners() {
-		Matrix1x4 d3, d2;
-		int[] corner;
-
-		for (int i = 0; i < 8; ++i) {
-			d3 = originalCorners3D[i].product(endMatrix);
-			corners3D[i] = d3;
-			d2 = d3.product(to2DMatrix);
-			//{Geometrical-debug} System.out.println("Corner: " + i + ", 3D: " + d3 + "\n           2D: " + d2);
-			corner = corners2D[i];
-			double focalPointFactor = (double) screenDistance / (screenDistance + brickDistance + d3.data[2]);
-			if (focalPointFactor < 0) {
-				focalPointFactor = -focalPointFactor;
-			}
-			corner[0] = (int) (focalPointFactor * d2.data[0]);
-			corner[1] = (int) (focalPointFactor * d2.data[1]);
-			//{Geometrical-debug} System.out.println("x: " + corner[0] + " y: " + corner[1]);
 		}
 	}
 
@@ -165,41 +118,28 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 	 * setTransform(), setScale() i set*Distance()
 	 */
 	public void recalcThis() {
-		//{Geometrical-debug} System.out.println("    scale: " + scale);
-		//{Geometrical-debug} System.out.println("     rotZ: " + rotZ);
-		//{Geometrical-debug} System.out.println("     rotY: " + rotY);
-		//{Geometrical-debug} System.out.println("     rotX: " + rotX);
-		//{Geometrical-debug} System.out.println("transform: " + transform);
-		//{Geometrical-debug} System.out.println("endMatrix: " + endMatrix);
-		calcCorners();
 		determineVisibleWalls();
 	}
-
-	
-
-	
 
 	public Wall[] getWalls() {
 		return walls;
 	}
-	protected int screenDistance = 300;
 
-	public int getScreenDistance() {
-		return screenDistance;
-	}
+	public void setWalls(Wall[] walls) {
+		if (walls == null) {
+			return;
+		}
 
-	public void setScreenDistance(int screenDistance) {
-		this.screenDistance = screenDistance;
-		to2DMatrix.data[3][2] = 1d / screenDistance;
+		if (walls.length != 6) {
+			throw new ArrayIndexOutOfBoundsException("Wrong number of walls: " + walls.length);
+		}
 
-	}
-	protected int brickDistance = 300;
-
-	public int getBrickDistance() {
-		return brickDistance;
-	}
-
-	public void setBrickDistance(int brickDistance) {
-		this.brickDistance = brickDistance;
+		// ustawianie rogow dla sician z tabeli CORNERS_TO_WALLS
+		this.walls = walls;
+		for (int w = 0; w < 6; ++w) {
+			for (int c = 0; c < 4; ++c) {
+				walls[w].setCorner(c, corners2D[CORNERS_TO_WALLS[w][c]]);
+			}
+		}
 	}
 }
