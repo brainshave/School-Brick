@@ -37,6 +37,7 @@ public abstract class AbstractTransformChangeNotifier implements TransformsChang
 		corners2D = new int[corners.length][2];
 		for (int i = 0; i < corners.length; ++i) {
 			originalCorners3D[i] = new Matrix1x4(corners[i]);
+			corners3D[i] = new Matrix1x4();
 		}
 		to2DMatrix.data[2][2] = 0;
 	}
@@ -53,7 +54,7 @@ public abstract class AbstractTransformChangeNotifier implements TransformsChang
 
 		for (int i = 0; i < corners.length; ++i) {
 			d3 = originalCorners3D[i].product(endMatrix);
-			corners3D[i] = d3;
+			corners3D[i].data = d3.data;
 			d2 = d3.product(to2DMatrix);
 			//{Geometrical-debug} System.out.println("Corner: " + i + ", 3D: " + d3 + "\n           2D: " + d2);
 			corner = corners2D[i];

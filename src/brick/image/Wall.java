@@ -4,9 +4,13 @@
  */
 package brick.image;
 
+import brick.math.Lamp;
+import brick.math.Matrix1x4;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
 /**
  * Klasa przechowująca informację o obrazkach umieszczonych na tej ścianie
@@ -18,11 +22,18 @@ import java.awt.Polygon;
  */
 public class Wall {
 
+	private static final int MAX_SIZE = 1200;
 	private int[][] corners = new int[4][];
+	private Matrix1x4[] corners3D = new Matrix1x4[4];
 	private int[] brightnesses = new int[4]; // 0-255
 	private int[][] images = null;
 	private int actualImage = 0;
 	private int num = -1;
+	private int[] buff = new int[MAX_SIZE * MAX_SIZE];
+	BufferedImage image = new BufferedImage(MAX_SIZE, MAX_SIZE, BufferedImage.TYPE_INT_ARGB);
+	private int dirtyX = MAX_SIZE, dirtyY = MAX_SIZE;
+	public Polygon polygon;
+	public Rectangle rect;
 
 	public Wall() {
 	}
@@ -39,8 +50,9 @@ public class Wall {
 		this.images = images;
 	}
 
-	public void setCorner(int num, int[] c) {
+	public void setCorner(int num, int[] c, Matrix1x4 m) {
 		corners[num] = c;
+		corners3D[num] = m;
 	}
 
 	public void setCorners(int[] c0, int[] c1, int[] c2, int[] c3) {
@@ -50,19 +62,63 @@ public class Wall {
 		corners[3] = c3;
 	}
 
-	public void paint(Graphics2D g, int width, int height) {
+	public void paint(Graphics2D g, int width, int height, Lamp lamp) {
 		// rysowanie samych kontur, póki co.
 		//{Geometrical-debug} System.out.println("Painting " + this);
-		Polygon p = new Polygon();
+		polygon = new Polygon();
 		for (int[] c : corners) {
-			p.addPoint(c[0] + width / 2, c[1] + height / 2);
+			polygon.addPoint(c[0] + width / 2, c[1] + height / 2);
 		}
-		//g.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 50));
-		g.setColor(color);
-		g.fillPolygon(p);
 
-		g.setColor(Color.BLACK);
-		g.drawPolygon(p);
+		rect = polygon.getBounds();
+
+		//g.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 50));
+		//g.setColor(color);
+		//g.fillPolygon(p);
+
+		int red = color.getRed();
+		int blue = color.getBlue();
+		int green = color.getGreen();
+		int colorInt = 0xff000000 + (red << 16) + (green << 8) + blue;
+
+		int x = 0, y = 0;
+		if (rect.width > dirtyX) {
+			dirtyX = rect.width;
+		}
+		if (rect.height > dirtyY) {
+			dirtyY = rect.height;
+		}
+
+		if (dirtyX > MAX_SIZE) {
+			dirtyX = MAX_SIZE;
+		}
+		if (dirtyY > MAX_SIZE) {
+			dirtyY = MAX_SIZE;
+		}
+
+		try {
+			for (x = 0; x < dirtyX; ++x) {
+				for (y = 0; y < dirtyY; ++y) {
+					buff[y * dirtyX + x] =
+							polygon.contains(x + rect.x, y + rect.y) ? colorInt : 0;
+				}
+			}
+
+			if(lamp.enlight(this)) {
+				image.getRaster().setDataElements(0, 0, dirtyX, dirtyY, buff);
+				g.drawImage(image, rect.x, rect.y, null);
+			}
+
+		} catch (ArrayIndexOutOfBoundsException e) {
+			System.err.println("Poza obszarem");
+		}
+		dirtyX = rect.width;
+		dirtyY = rect.height;
+		//g.setColor(color);
+		//g.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+		g.setColor(Color.WHITE);
+		g.drawPolygon(polygon);
 		int avgX = 0;
 		int avgY = 0;
 		for (int[] c : corners) {

@@ -4,6 +4,7 @@
  */
 package brick.math;
 
+import brick.image.Wall;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import javax.swing.ComboBoxModel;
@@ -16,7 +17,7 @@ import javax.swing.DefaultComboBoxModel;
 public class Lamp extends AbstractTransformChangeNotifier {
 
 	enum Shader {
-		FLAT, GOURAND, PHONG
+		FLAT, GOURAUD, PHONG
 	}
 
 	protected Shader shader = Shader.FLAT;
@@ -36,6 +37,18 @@ public class Lamp extends AbstractTransformChangeNotifier {
 
 	public Lamp() {
 		super(CORNERS);
+		recalc();
+	}
+
+	/**
+	 *
+	 * @param wall
+	 * @return true if wall is enlighten at all
+	 */
+	public boolean enlight(Wall wall) {
+		
+
+		return true;
 	}
 
 	public void recalcThis() {
@@ -52,4 +65,6 @@ public class Lamp extends AbstractTransformChangeNotifier {
 	public ComboBoxModel getModel() {
 		return model;
 	}
+
+
 }

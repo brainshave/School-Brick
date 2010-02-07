@@ -77,7 +77,7 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 	public void paint(Graphics2D g, int width, int height) {
 		for (int i = 0; i < 6; ++i) {
 			if (visible[i]) {
-				walls[i].paint(g, width, height);
+				walls[i].paint(g, width, height, lamp);
 			}
 		}
 	}
@@ -134,12 +134,24 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 			throw new ArrayIndexOutOfBoundsException("Wrong number of walls: " + walls.length);
 		}
 
-		// ustawianie rogow dla sician z tabeli CORNERS_TO_WALLS
+		// ustawianie rogow dla scian z tabeli CORNERS_TO_WALLS
 		this.walls = walls;
 		for (int w = 0; w < 6; ++w) {
 			for (int c = 0; c < 4; ++c) {
-				walls[w].setCorner(c, corners2D[CORNERS_TO_WALLS[w][c]]);
+				int index = CORNERS_TO_WALLS[w][c];
+				walls[w].setCorner(c, corners2D[index], corners3D[index]);
 			}
 		}
 	}
+
+	protected Lamp lamp;
+
+	public Lamp getLamp() {
+		return lamp;
+	}
+
+	public void setLamp(Lamp lamp) {
+		this.lamp = lamp;
+	}
+
 }
