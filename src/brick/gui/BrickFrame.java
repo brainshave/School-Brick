@@ -13,6 +13,7 @@ package brick.gui;
 
 import brick.image.TransformsChangeNotifyer;
 import brick.math.Brick;
+import brick.math.Lamp;
 
 /**
  *
@@ -42,14 +43,21 @@ public class BrickFrame extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        xScrollersPanel = new brick.gui.ScrollersPanel();
-        yScrollersPanel = new brick.gui.ScrollersPanel();
-        zScrollersPanel = new brick.gui.ScrollersPanel();
+        xBrickScrollersPanel = new brick.gui.ScrollersPanel();
+        yBrickScrollersPanel = new brick.gui.ScrollersPanel();
+        zBrickScrollersPanel = new brick.gui.ScrollersPanel();
         renderPanel = new brick.gui.RenderPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jTabbedPane2 = new javax.swing.JTabbedPane();
+        xLampScrollersPanel = new brick.gui.ScrollersPanel();
+        yLampScrollersPanel = new brick.gui.ScrollersPanel();
+        zLampScrollersPanel = new brick.gui.ScrollersPanel();
+        jComboBox1 = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("SW-Brick");
         setMinimumSize(new java.awt.Dimension(800, 600));
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
@@ -107,45 +115,111 @@ public class BrickFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
         jPanel1.add(jLabel2, gridBagConstraints);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        getContentPane().add(jPanel1, gridBagConstraints);
 
-        jTabbedPane1.setBorder(null);
+        jTabbedPane1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Kostka", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BELOW_TOP));
 
-        xScrollersPanel.setAxis(TransformsChangeNotifyer.X);
-        xScrollersPanel.setRenderPanel(renderPanel);
-        xScrollersPanel.setTitle("X");
+        xBrickScrollersPanel.setAxis(TransformsChangeNotifyer.X);
+        xBrickScrollersPanel.setRenderPanel(renderPanel);
+        xBrickScrollersPanel.setTitle("X");
 
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), xScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), xBrickScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
         bindingGroup.addBinding(binding);
 
-        jTabbedPane1.addTab(xScrollersPanel.getTitle(), xScrollersPanel);
+        jTabbedPane1.addTab(xBrickScrollersPanel.getTitle(), xBrickScrollersPanel);
 
-        yScrollersPanel.setAxis(TransformsChangeNotifyer.Y);
-        yScrollersPanel.setRenderPanel(renderPanel);
-        yScrollersPanel.setTitle("Y");
+        yBrickScrollersPanel.setAxis(TransformsChangeNotifyer.Y);
+        yBrickScrollersPanel.setRenderPanel(renderPanel);
+        yBrickScrollersPanel.setTitle("Y");
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), yScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), yBrickScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
         bindingGroup.addBinding(binding);
 
-        jTabbedPane1.addTab(yScrollersPanel.getTitle(), yScrollersPanel);
+        jTabbedPane1.addTab(yBrickScrollersPanel.getTitle(), yBrickScrollersPanel);
 
-        zScrollersPanel.setAxis(TransformsChangeNotifyer.Z);
-        zScrollersPanel.setRenderPanel(renderPanel);
-        zScrollersPanel.setTitle("Z");
+        zBrickScrollersPanel.setAxis(TransformsChangeNotifyer.Z);
+        zBrickScrollersPanel.setRenderPanel(renderPanel);
+        zBrickScrollersPanel.setTitle("Z");
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), zScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), zBrickScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
         bindingGroup.addBinding(binding);
 
-        jTabbedPane1.addTab(zScrollersPanel.getTitle(), zScrollersPanel);
+        jTabbedPane1.addTab(zBrickScrollersPanel.getTitle(), zBrickScrollersPanel);
 
-        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.EAST);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 1.0;
+        getContentPane().add(jTabbedPane1, gridBagConstraints);
 
         renderPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, this, org.jdesktop.beansbinding.ELProperty.create("${brick}"), renderPanel, org.jdesktop.beansbinding.BeanProperty.create("brick"));
         bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${lamp}"), renderPanel, org.jdesktop.beansbinding.BeanProperty.create("lamp"));
+        bindingGroup.addBinding(binding);
 
-        getContentPane().add(renderPanel, java.awt.BorderLayout.CENTER);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        getContentPane().add(renderPanel, gridBagConstraints);
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Lampa", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BELOW_TOP));
+        jPanel2.setLayout(new java.awt.BorderLayout());
+
+        jTabbedPane2.setBorder(null);
+
+        xLampScrollersPanel.setAxis(TransformsChangeNotifyer.X);
+        xLampScrollersPanel.setRenderPanel(renderPanel);
+        xLampScrollersPanel.setTitle("X");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${lamp}"), xLampScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
+        bindingGroup.addBinding(binding);
+
+        jTabbedPane2.addTab("X", xLampScrollersPanel);
+
+        yLampScrollersPanel.setAxis(TransformsChangeNotifyer.Y);
+        yLampScrollersPanel.setRenderPanel(renderPanel);
+        yLampScrollersPanel.setTitle("Y");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${lamp}"), yLampScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
+        bindingGroup.addBinding(binding);
+
+        jTabbedPane2.addTab("Y", yLampScrollersPanel);
+
+        zLampScrollersPanel.setAxis(TransformsChangeNotifyer.Z);
+        zLampScrollersPanel.setRenderPanel(renderPanel);
+        zLampScrollersPanel.setTitle("Z");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${lamp}"), zLampScrollersPanel, org.jdesktop.beansbinding.BeanProperty.create("abstractBrick"));
+        bindingGroup.addBinding(binding);
+
+        jTabbedPane2.addTab("Z", zLampScrollersPanel);
+
+        jPanel2.add(jTabbedPane2, java.awt.BorderLayout.CENTER);
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${lamp.model}"), jComboBox1, org.jdesktop.beansbinding.BeanProperty.create("model"));
+        bindingGroup.addBinding(binding);
+
+        jPanel2.add(jComboBox1, java.awt.BorderLayout.NORTH);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 1.1;
+        getContentPane().add(jPanel2, gridBagConstraints);
 
         bindingGroup.bind();
 
@@ -156,6 +230,9 @@ public class BrickFrame extends javax.swing.JFrame {
 		brick.setBrickDistance(objectDictanceScrollBar.getValue());
 		brick.setScreenDistance(screenDistanceScrollBar.getValue());
 		brick.recalc();
+		lamp.setBrickDistance(objectDictanceScrollBar.getValue());
+		lamp.setScreenDistance(screenDistanceScrollBar.getValue());
+		lamp.recalc();
 		renderPanel.repaint();
 	}//GEN-LAST:event_viewChanged
 
@@ -171,37 +248,43 @@ public class BrickFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JScrollBar objectDictanceScrollBar;
     private brick.gui.RenderPanel renderPanel;
     private javax.swing.JScrollBar screenDistanceScrollBar;
-    private brick.gui.ScrollersPanel xScrollersPanel;
-    private brick.gui.ScrollersPanel yScrollersPanel;
-    private brick.gui.ScrollersPanel zScrollersPanel;
+    private brick.gui.ScrollersPanel xBrickScrollersPanel;
+    private brick.gui.ScrollersPanel xLampScrollersPanel;
+    private brick.gui.ScrollersPanel yBrickScrollersPanel;
+    private brick.gui.ScrollersPanel yLampScrollersPanel;
+    private brick.gui.ScrollersPanel zBrickScrollersPanel;
+    private brick.gui.ScrollersPanel zLampScrollersPanel;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
 	private Brick brick = new Brick();
 
-	/**
-	 * Get the value of brick
-	 *
-	 * @return the value of brick
-	 */
 	public Brick getBrick() {
 		return brick;
 	}
 
-	/**
-	 * Set the value of brick
-	 *
-	 * @param brick new value of brick
-	 */
 	public void setBrick(Brick brick) {
 		this.brick = brick;
+	}
+
+	protected Lamp lamp = new Lamp();
+
+	public Lamp getLamp() {
+		return lamp;
+	}
+
+	public void setLamp(Lamp lamp) {
+		this.lamp = lamp;
 	}
 
 }

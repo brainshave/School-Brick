@@ -51,7 +51,7 @@ public abstract class AbstractTransformChangeNotifier implements TransformsChang
 		Matrix1x4 d3, d2;
 		int[] corner;
 
-		for (int i = 0; i < 8; ++i) {
+		for (int i = 0; i < corners.length; ++i) {
 			d3 = originalCorners3D[i].product(endMatrix);
 			corners3D[i] = d3;
 			d2 = d3.product(to2DMatrix);
