@@ -74,9 +74,15 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 	}
 
 	public void paint(Graphics2D g, int width, int height) {
-		for (int i = 0; i < 6; ++i) {
-			if (walls[i].isVisible()) {
-				walls[i].paint(g, width, height, lamp);
+//		for (int i = 0; i < 6; ++i) {
+//			if (walls[i].isVisible()) {
+//				walls[i].paint(g, width, height, lamp);
+//			}
+//		}
+		for (Wall w : walls) {
+			if(w.isVisible()) {
+				w.reBuff(width, height, lamp);
+				w.paint(g);
 			}
 		}
 	}
@@ -108,11 +114,6 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 		for (Wall w : walls) {
 			w.recalc(viewer);
 		}
-//		for (int w = 0; w < 6; ++w) {
-//			Vector v = new Vector(viewer, corners3D[CORNERS_TO_WALLS[w][0]]).normalize();
-//			double cos = v.cosNorm(walls[w].vector);
-//			visible[w] = cos < 0;
-//		}
 	}
 
 	/**

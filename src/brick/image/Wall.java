@@ -25,20 +25,20 @@ public class Wall {
 
 	private boolean visible = false;
 	private static final int MAX_SIZE = 1200;
-	private int[][] corners = new int[4][];
-	private Matrix1x4[] corners3D = new Matrix1x4[4];
+	public int[][] corners = new int[4][];
+	public Matrix1x4[] corners3D = new Matrix1x4[4];
 	public Vector[] viewerVectors = new Vector[4];
 	private int[] brightnesses = new int[4]; // 0-255
 	private int[][] images = null;
 	private int actualImage = 0;
 	private int num = -1;
-	private int[] buff = new int[MAX_SIZE * MAX_SIZE];
+	public int[] buff = new int[MAX_SIZE * MAX_SIZE];
 	BufferedImage image = new BufferedImage(MAX_SIZE, MAX_SIZE, BufferedImage.TYPE_INT_ARGB);
 	private int dirtyX = MAX_SIZE, dirtyY = MAX_SIZE;
-
 	public Polygon polygon;
 	public Rectangle rect;
 	public Vector vector;
+	private Matrix1x4 viewer;
 
 	public Wall() {
 	}
@@ -68,19 +68,14 @@ public class Wall {
 	}
 
 	public void recalc(Matrix1x4 viewer) {
-		for(int i = 0; i < 4; ++i) {
+		this.viewer = viewer;
+		for (int i = 0; i < 4; ++i) {
 			viewerVectors[i] = new Vector(viewer, corners3D[i]).normalize();
 		}
 		visible = viewerVectors[0].cosNorm(vector) < 0;
 	}
 
-	public void reBuff() {
-
-	}
-
-	public void paint(Graphics2D g, int width, int height, Lamp lamp) {
-		// rysowanie samych kontur, póki co.
-		//{Geometrical-debug} System.out.println("Painting " + this);
+	public void reBuff(int width, int height, Lamp lamp) {
 		polygon = new Polygon();
 		for (int[] c : corners) {
 			polygon.addPoint(c[0] + width / 2, c[1] + height / 2);
@@ -113,16 +108,19 @@ public class Wall {
 		}
 
 		try {
-			for (x = 0; x < dirtyX; ++x) {
-				for (y = 0; y < dirtyY; ++y) {
-					buff[y * dirtyX + x] =
+			int offset = 0;
+			for (y = 0; y < dirtyY; ++y) {
+				for (x = 0; x < dirtyX; ++x) {
+					buff[offset + x] =
 							polygon.contains(x + rect.x, y + rect.y) ? colorInt : 0;
 				}
+				offset += dirtyX;
 			}
 
-			if(lamp.enlight(this)) {
+			visible = lamp.enlight(this, viewer, dirtyX * dirtyY);
+
+			if (visible) {
 				image.getRaster().setDataElements(0, 0, dirtyX, dirtyY, buff);
-				g.drawImage(image, rect.x, rect.y, null);
 			}
 
 		} catch (ArrayIndexOutOfBoundsException e) {
@@ -130,20 +128,24 @@ public class Wall {
 		}
 		dirtyX = rect.width;
 		dirtyY = rect.height;
-		//g.setColor(color);
-		//g.fillRect(rect.x, rect.y, rect.width, rect.height);
+	}
+
+	public void paint(Graphics2D g) {
+		if (visible) {
+			g.drawImage(image, rect.x, rect.y, null);
+		}
 
 		g.setColor(Color.WHITE);
 		g.drawPolygon(polygon);
-		int avgX = 0;
-		int avgY = 0;
-		for (int[] c : corners) {
-			avgX += c[0];
-			avgY += c[1];
-		}
-		avgX /= 4;
-		avgY /= 4;
-		g.drawString(String.valueOf(num), avgX + width / 2, avgY + height / 2);
+//		int avgX = 0;
+//		int avgY = 0;
+//		for (int[] c : corners) {
+//			avgX += c[0];
+//			avgY += c[1];
+//		}
+//		avgX /= 4;
+//		avgY /= 4;
+		//g.drawString(String.valueOf(num), avgX + width / 2, avgY + height / 2);
 	}
 
 	public void paintRect(Graphics2D g, int x, int y, int width, int height) {
@@ -174,5 +176,4 @@ public class Wall {
 	public boolean isVisible() {
 		return visible;
 	}
-	
 }

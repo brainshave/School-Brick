@@ -14,6 +14,7 @@ package brick.gui;
 import brick.image.TransformsChangeNotifyer;
 import brick.math.Brick;
 import brick.math.Lamp;
+import javax.swing.SpinnerNumberModel;
 
 /**
  *
@@ -25,7 +26,13 @@ public class BrickFrame extends javax.swing.JFrame {
     public BrickFrame() {
         initComponents();
 		brick.setLamp(lamp);
+		lamp.setFrame(this);
     }
+	
+	public void recalc() {
+		lamp.recalc();
+		brick.recalc();
+	}
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -53,6 +60,15 @@ public class BrickFrame extends javax.swing.JFrame {
         xLampScrollersPanel = new brick.gui.ScrollersPanel();
         yLampScrollersPanel = new brick.gui.ScrollersPanel();
         zLampScrollersPanel = new brick.gui.ScrollersPanel();
+        jPanel3 = new javax.swing.JPanel();
+        kdSpinner = new javax.swing.JSpinner();
+        ksSpinner = new javax.swing.JSpinner();
+        d0Spiinner = new javax.swing.JSpinner();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jSpinner1 = new javax.swing.JSpinner();
+        jLabel6 = new javax.swing.JLabel();
         shaderComboBox = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -127,6 +143,7 @@ public class BrickFrame extends javax.swing.JFrame {
         BrickTabs.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Kostka", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.BELOW_TOP));
 
         xBrickScrollersPanel.setAxis(TransformsChangeNotifyer.X);
+        xBrickScrollersPanel.setFrame(this);
         xBrickScrollersPanel.setRenderPanel(renderPanel);
         xBrickScrollersPanel.setTitle("X");
 
@@ -136,6 +153,7 @@ public class BrickFrame extends javax.swing.JFrame {
         BrickTabs.addTab(xBrickScrollersPanel.getTitle(), xBrickScrollersPanel);
 
         yBrickScrollersPanel.setAxis(TransformsChangeNotifyer.Y);
+        yBrickScrollersPanel.setFrame(this);
         yBrickScrollersPanel.setRenderPanel(renderPanel);
         yBrickScrollersPanel.setTitle("Y");
 
@@ -145,6 +163,7 @@ public class BrickFrame extends javax.swing.JFrame {
         BrickTabs.addTab(yBrickScrollersPanel.getTitle(), yBrickScrollersPanel);
 
         zBrickScrollersPanel.setAxis(TransformsChangeNotifyer.Z);
+        zBrickScrollersPanel.setFrame(this);
         zBrickScrollersPanel.setRenderPanel(renderPanel);
         zBrickScrollersPanel.setTitle("Z");
 
@@ -182,6 +201,7 @@ public class BrickFrame extends javax.swing.JFrame {
         LampTabs.setBorder(null);
 
         xLampScrollersPanel.setAxis(TransformsChangeNotifyer.X);
+        xLampScrollersPanel.setFrame(this);
         xLampScrollersPanel.setRenderPanel(renderPanel);
         xLampScrollersPanel.setTitle("X");
 
@@ -191,6 +211,7 @@ public class BrickFrame extends javax.swing.JFrame {
         LampTabs.addTab("X", xLampScrollersPanel);
 
         yLampScrollersPanel.setAxis(TransformsChangeNotifyer.Y);
+        yLampScrollersPanel.setFrame(this);
         yLampScrollersPanel.setRenderPanel(renderPanel);
         yLampScrollersPanel.setTitle("Y");
 
@@ -200,6 +221,7 @@ public class BrickFrame extends javax.swing.JFrame {
         LampTabs.addTab("Y", yLampScrollersPanel);
 
         zLampScrollersPanel.setAxis(TransformsChangeNotifyer.Z);
+        zLampScrollersPanel.setFrame(this);
         zLampScrollersPanel.setRenderPanel(renderPanel);
         zLampScrollersPanel.setTitle("Z");
 
@@ -207,6 +229,86 @@ public class BrickFrame extends javax.swing.JFrame {
         bindingGroup.addBinding(binding);
 
         LampTabs.addTab("Z", zLampScrollersPanel);
+
+        jPanel3.setLayout(new java.awt.GridBagLayout());
+
+        kdSpinner.setModel(new SpinnerNumberModel(0.5, 0d, 1d, 0.1d));
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${lamp.kd}"), kdSpinner, org.jdesktop.beansbinding.BeanProperty.create("value"));
+        bindingGroup.addBinding(binding);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        jPanel3.add(kdSpinner, gridBagConstraints);
+
+        ksSpinner.setModel(new SpinnerNumberModel(0.5, 0d, 1d, 0.1d));
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${lamp.ks}"), ksSpinner, org.jdesktop.beansbinding.BeanProperty.create("value"));
+        bindingGroup.addBinding(binding);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        jPanel3.add(ksSpinner, gridBagConstraints);
+
+        d0Spiinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), null, null, Integer.valueOf(5)));
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${lamp.d0}"), d0Spiinner, org.jdesktop.beansbinding.BeanProperty.create("value"));
+        bindingGroup.addBinding(binding);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        jPanel3.add(d0Spiinner, gridBagConstraints);
+
+        jLabel3.setText("Kd:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        jPanel3.add(jLabel3, gridBagConstraints);
+
+        jLabel4.setText("Ks:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        jPanel3.add(jLabel4, gridBagConstraints);
+
+        jLabel5.setText("Do:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        jPanel3.add(jLabel5, gridBagConstraints);
+
+        jSpinner1.setModel(new SpinnerNumberModel(2d, 1d, Double.POSITIVE_INFINITY, 0.5));
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${lamp.m}"), jSpinner1, org.jdesktop.beansbinding.BeanProperty.create("value"));
+        bindingGroup.addBinding(binding);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        jPanel3.add(jSpinner1, gridBagConstraints);
+
+        jLabel6.setText("m:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        jPanel3.add(jLabel6, gridBagConstraints);
+
+        LampTabs.addTab("Tuning", jPanel3);
 
         jPanel2.add(LampTabs, java.awt.BorderLayout.CENTER);
 
@@ -230,10 +332,11 @@ public class BrickFrame extends javax.swing.JFrame {
 	private void viewChanged(java.awt.event.AdjustmentEvent evt) {//GEN-FIRST:event_viewChanged
 		brick.setBrickDistance(objectDictanceScrollBar.getValue());
 		brick.setScreenDistance(screenDistanceScrollBar.getValue());
-		brick.recalc();
+		//brick.recalc();
 		lamp.setBrickDistance(objectDictanceScrollBar.getValue());
 		lamp.setScreenDistance(screenDistanceScrollBar.getValue());
-		lamp.recalc();
+		//lamp.recalc();
+		this.recalc();
 		renderPanel.repaint();
 	}//GEN-LAST:event_viewChanged
 
@@ -251,10 +354,19 @@ public class BrickFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane BrickTabs;
     private javax.swing.JTabbedPane LampTabs;
+    private javax.swing.JSpinner d0Spiinner;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JSpinner jSpinner1;
+    private javax.swing.JSpinner kdSpinner;
+    private javax.swing.JSpinner ksSpinner;
     private javax.swing.JScrollBar objectDictanceScrollBar;
     private brick.gui.RenderPanel renderPanel;
     private javax.swing.JScrollBar screenDistanceScrollBar;

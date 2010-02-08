@@ -114,6 +114,9 @@
             <Property name="axis" type="int" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
               <Connection code="TransformsChangeNotifyer.X" type="code"/>
             </Property>
+            <Property name="frame" type="brick.gui.BrickFrame" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="this" type="code"/>
+            </Property>
             <Property name="renderPanel" type="brick.gui.RenderPanel" editor="org.netbeans.modules.form.ComponentChooserEditor">
               <ComponentRef name="renderPanel"/>
             </Property>
@@ -137,6 +140,9 @@
             <Property name="axis" type="int" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
               <Connection code="TransformsChangeNotifyer.Y" type="code"/>
             </Property>
+            <Property name="frame" type="brick.gui.BrickFrame" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="this" type="code"/>
+            </Property>
             <Property name="renderPanel" type="brick.gui.RenderPanel" editor="org.netbeans.modules.form.ComponentChooserEditor">
               <ComponentRef name="renderPanel"/>
             </Property>
@@ -159,6 +165,9 @@
           <Properties>
             <Property name="axis" type="int" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
               <Connection code="TransformsChangeNotifyer.Z" type="code"/>
+            </Property>
+            <Property name="frame" type="brick.gui.BrickFrame" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="this" type="code"/>
             </Property>
             <Property name="renderPanel" type="brick.gui.RenderPanel" editor="org.netbeans.modules.form.ComponentChooserEditor">
               <ComponentRef name="renderPanel"/>
@@ -235,6 +244,9 @@
                 <Property name="axis" type="int" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="TransformsChangeNotifyer.X" type="code"/>
                 </Property>
+                <Property name="frame" type="brick.gui.BrickFrame" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="this" type="code"/>
+                </Property>
                 <Property name="renderPanel" type="brick.gui.RenderPanel" editor="org.netbeans.modules.form.ComponentChooserEditor">
                   <ComponentRef name="renderPanel"/>
                 </Property>
@@ -255,6 +267,9 @@
               <Properties>
                 <Property name="axis" type="int" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="TransformsChangeNotifyer.Y" type="code"/>
+                </Property>
+                <Property name="frame" type="brick.gui.BrickFrame" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="this" type="code"/>
                 </Property>
                 <Property name="renderPanel" type="brick.gui.RenderPanel" editor="org.netbeans.modules.form.ComponentChooserEditor">
                   <ComponentRef name="renderPanel"/>
@@ -277,6 +292,9 @@
                 <Property name="axis" type="int" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="TransformsChangeNotifyer.Z" type="code"/>
                 </Property>
+                <Property name="frame" type="brick.gui.BrickFrame" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="this" type="code"/>
+                </Property>
                 <Property name="renderPanel" type="brick.gui.RenderPanel" editor="org.netbeans.modules.form.ComponentChooserEditor">
                   <ComponentRef name="renderPanel"/>
                 </Property>
@@ -293,6 +311,119 @@
                 </Constraint>
               </Constraints>
             </Component>
+            <Container class="javax.swing.JPanel" name="jPanel3">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Tuning">
+                    <Property name="tabTitle" type="java.lang.String" value="Tuning"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout"/>
+              <SubComponents>
+                <Component class="javax.swing.JSpinner" name="kdSpinner">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="new SpinnerNumberModel(0.5, 0d, 1d, 0.1d)" type="code"/>
+                    </Property>
+                  </Properties>
+                  <BindingProperties>
+                    <BindingProperty name="value" source="Form" sourcePath="${lamp.kd}" target="kdSpinner" targetPath="value" updateStrategy="0" immediately="false"/>
+                  </BindingProperties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                      <GridBagConstraints gridX="1" gridY="0" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="5" insetsBottom="0" insetsRight="0" anchor="10" weightX="1.0" weightY="0.0"/>
+                    </Constraint>
+                  </Constraints>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="ksSpinner">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="new SpinnerNumberModel(0.5, 0d, 1d, 0.1d)" type="code"/>
+                    </Property>
+                  </Properties>
+                  <BindingProperties>
+                    <BindingProperty name="value" source="Form" sourcePath="${lamp.ks}" target="ksSpinner" targetPath="value" updateStrategy="0" immediately="false"/>
+                  </BindingProperties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                      <GridBagConstraints gridX="1" gridY="1" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="5" insetsBottom="0" insetsRight="0" anchor="10" weightX="1.0" weightY="0.0"/>
+                    </Constraint>
+                  </Constraints>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="d0Spiinner">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                      <SpinnerModel initial="0" numberType="java.lang.Integer" stepSize="5" type="number"/>
+                    </Property>
+                  </Properties>
+                  <BindingProperties>
+                    <BindingProperty name="value" source="Form" sourcePath="${lamp.d0}" target="d0Spiinner" targetPath="value" updateStrategy="0" immediately="false"/>
+                  </BindingProperties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                      <GridBagConstraints gridX="1" gridY="2" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="5" insetsBottom="0" insetsRight="0" anchor="10" weightX="1.0" weightY="0.0"/>
+                    </Constraint>
+                  </Constraints>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel3">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Kd:"/>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                      <GridBagConstraints gridX="0" gridY="0" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="0.0" weightY="0.0"/>
+                    </Constraint>
+                  </Constraints>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel4">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Ks:"/>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                      <GridBagConstraints gridX="0" gridY="1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="0.0" weightY="0.0"/>
+                    </Constraint>
+                  </Constraints>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel5">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Do:"/>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                      <GridBagConstraints gridX="0" gridY="2" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="0.0" weightY="0.0"/>
+                    </Constraint>
+                  </Constraints>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="jSpinner1">
+                  <Properties>
+                    <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="new SpinnerNumberModel(2d, 1d, Double.POSITIVE_INFINITY, 0.5)" type="code"/>
+                    </Property>
+                  </Properties>
+                  <BindingProperties>
+                    <BindingProperty name="value" source="Form" sourcePath="${lamp.m}" target="jSpinner1" targetPath="value" updateStrategy="0" immediately="false"/>
+                  </BindingProperties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                      <GridBagConstraints gridX="1" gridY="3" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="5" insetsBottom="0" insetsRight="0" anchor="10" weightX="1.0" weightY="0.0"/>
+                    </Constraint>
+                  </Constraints>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel6">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="m:"/>
+                  </Properties>
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                      <GridBagConstraints gridX="0" gridY="3" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="0.0" weightY="0.0"/>
+                    </Constraint>
+                  </Constraints>
+                </Component>
+              </SubComponents>
+            </Container>
           </SubComponents>
         </Container>
         <Component class="javax.swing.JComboBox" name="shaderComboBox">

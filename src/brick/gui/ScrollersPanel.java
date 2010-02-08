@@ -172,7 +172,9 @@ public class ScrollersPanel extends javax.swing.JPanel {
 			}
 			abstractBrick.setScale(axis, scale);
 			abstractBrick.setTransform(axis, (double) positionScrollBar.getValue());
-			abstractBrick.recalc();
+			if(frame != null) {
+				frame.recalc();
+			}
 			if(renderPanel != null) {
 				renderPanel.repaint();
 			}
@@ -236,6 +238,16 @@ public class ScrollersPanel extends javax.swing.JPanel {
 
 	public void setRenderPanel(RenderPanel renderPanel) {
 		this.renderPanel = renderPanel;
+	}
+
+	protected BrickFrame frame = null;
+
+	public BrickFrame getFrame() {
+		return frame;
+	}
+
+	public void setFrame(BrickFrame frame) {
+		this.frame = frame;
 	}
 
 }
