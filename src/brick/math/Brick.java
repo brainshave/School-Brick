@@ -63,7 +63,6 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 		/* 4 */ {0, 3, 2, 1},
 		/* 5 */ {5, 6, 7, 4}
 	};
-	private final Vector[] wallVectors = new Vector[6];
 	private final boolean[] visible = {true, true, true, true, true, true};
 
 	public Brick() {
@@ -76,7 +75,7 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 
 	public void paint(Graphics2D g, int width, int height) {
 		for (int i = 0; i < 6; ++i) {
-			if (visible[i]) {
+			if (walls[i].isVisible()) {
 				walls[i].paint(g, width, height, lamp);
 			}
 		}
@@ -91,12 +90,12 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 		 * dla reszty po prostu odwracamy wersory:
 		 * 0:2, 1:3, 5:4
 		 */
-		wallVectors[0] = new Vector(corners3D[6], corners3D[5]).normalize();
-		wallVectors[1] = new Vector(corners3D[4], corners3D[5]).normalize();
-		wallVectors[5] = new Vector(corners3D[1], corners3D[5]).normalize();
-		wallVectors[2] = wallVectors[0].invert();
-		wallVectors[3] = wallVectors[1].invert();
-		wallVectors[4] = wallVectors[5].invert();
+		walls[0].vector = new Vector(corners3D[6], corners3D[5]).normalize();
+		walls[1].vector = new Vector(corners3D[4], corners3D[5]).normalize();
+		walls[5].vector = new Vector(corners3D[1], corners3D[5]).normalize();
+		walls[2].vector = walls[0].vector.invert();
+		walls[3].vector = walls[1].vector.invert();
+		walls[4].vector = walls[5].vector.invert();
 
 		/**
 		 * obliczamy katy prostej od punktu widzenia do sciany 
@@ -106,11 +105,14 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 		 * czyli cos < 0
 		 */
 		Matrix1x4 viewer = new Matrix1x4(0, 0, -screenDistance - brickDistance, 0);
-		for (int w = 0; w < 6; ++w) {
-			Vector v = new Vector(viewer, corners3D[CORNERS_TO_WALLS[w][0]]).normalize();
-			double cos = v.cosNorm(wallVectors[w]);
-			visible[w] = cos < 0;
+		for (Wall w : walls) {
+			w.recalc(viewer);
 		}
+//		for (int w = 0; w < 6; ++w) {
+//			Vector v = new Vector(viewer, corners3D[CORNERS_TO_WALLS[w][0]]).normalize();
+//			double cos = v.cosNorm(walls[w].vector);
+//			visible[w] = cos < 0;
+//		}
 	}
 
 	/**
@@ -143,7 +145,6 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 			}
 		}
 	}
-
 	protected Lamp lamp;
 
 	public Lamp getLamp() {
@@ -153,5 +154,4 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 	public void setLamp(Lamp lamp) {
 		this.lamp = lamp;
 	}
-
 }

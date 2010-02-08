@@ -27,6 +27,14 @@ public class Vector extends Matrix1x4 {
 		super(a, b, c, d);
 	}
 
+	public Vector sum(Matrix1x4 other) {
+		Vector v = new Vector();
+		for(int i = 0; i < 4; ++i) {
+			v.data[i] += other.data[i];
+		}
+		return v;
+	}
+
 	
 	/**
 	 * Normalize this vector, reversable via denormalize(), function returns

@@ -6,6 +6,7 @@ package brick.image;
 
 import brick.math.Lamp;
 import brick.math.Matrix1x4;
+import brick.math.Vector;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
@@ -22,9 +23,11 @@ import java.awt.image.BufferedImage;
  */
 public class Wall {
 
+	private boolean visible = false;
 	private static final int MAX_SIZE = 1200;
 	private int[][] corners = new int[4][];
 	private Matrix1x4[] corners3D = new Matrix1x4[4];
+	public Vector[] viewerVectors = new Vector[4];
 	private int[] brightnesses = new int[4]; // 0-255
 	private int[][] images = null;
 	private int actualImage = 0;
@@ -32,8 +35,10 @@ public class Wall {
 	private int[] buff = new int[MAX_SIZE * MAX_SIZE];
 	BufferedImage image = new BufferedImage(MAX_SIZE, MAX_SIZE, BufferedImage.TYPE_INT_ARGB);
 	private int dirtyX = MAX_SIZE, dirtyY = MAX_SIZE;
+
 	public Polygon polygon;
 	public Rectangle rect;
+	public Vector vector;
 
 	public Wall() {
 	}
@@ -60,6 +65,17 @@ public class Wall {
 		corners[1] = c1;
 		corners[2] = c2;
 		corners[3] = c3;
+	}
+
+	public void recalc(Matrix1x4 viewer) {
+		for(int i = 0; i < 4; ++i) {
+			viewerVectors[i] = new Vector(viewer, corners3D[i]).normalize();
+		}
+		visible = viewerVectors[0].cosNorm(vector) < 0;
+	}
+
+	public void reBuff() {
+
 	}
 
 	public void paint(Graphics2D g, int width, int height, Lamp lamp) {
@@ -154,4 +170,9 @@ public class Wall {
 	public void setColor(Color color) {
 		this.color = color;
 	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+	
 }
