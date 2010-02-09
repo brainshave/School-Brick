@@ -25,7 +25,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 
 		FLAT, GOURAUD, PHONG
 	}
-	protected Shader shader = Shader.FLAT;
+	protected Shader shader = Shader.GOURAUD;
 	//private Vector lightVector = null;
 	private Matrix1x4 viewer;
 	private ComboBoxModel model = new DefaultComboBoxModel(Shader.values()) {
@@ -55,18 +55,18 @@ public class Lamp extends AbstractTransformChangeNotifier {
 
 		double len = l.length();
 		double brightness = (kd * vector.cosNorm(l)
-				+ ks * Math.pow(e.cosNorm(l), m)) / (len*len);
-		
+				+ ks * Math.pow(e.cosNorm(l), m)) / (len * len);
+
 		//double brightness = (kd * vector.cosNorm(l)) / (len*len);
-		System.out.println(brightness);
-		brightness *= 256*256;
+		//System.out.println(brightness);
+		brightness *= 256 * 256;
 		//if (brightness > 255) brightness = 255;
 		if (brightness < 0) {
 			brightness = 0;
 		}
 		return (int) brightness;
 	}
-	
+
 	public int applyBrigthness(int color, int brightness) {
 		int mask = 0xff;
 		int tmp;
@@ -90,18 +90,134 @@ public class Lamp extends AbstractTransformChangeNotifier {
 //					blue = ((color & 0xff) + bright) & 0xff;
 	}
 
+	public static void sortIndexes2D(int[] indexes, int[][] corners) {
+		for (int i = 0; i < indexes.length; ++i) {
+			for (int k = i + 1; k < indexes.length; ++k) {
+				if (corners[indexes[k]][1] < corners[indexes[i]][1]) {
+					int tmp = indexes[k];
+					indexes[k] = indexes[i];
+					indexes[i] = tmp;
+				}
+			}
+		}
+
+		testSortedIndexes(indexes, corners);
+
+//		int[][] sortedCorners = new int[3][];
+//		for(int i = 0; i < 3; ++i) {
+//			sortedCorners[i] = corners[indexes[i]];
+//		}
+//		return sortedCorners;
+	}
+
+	public static void testSortedIndexes(int[] indexes, int[][] corners) {
+		int a = corners[indexes[0]][1];
+		int b = corners[indexes[1]][1];
+		int c = corners[indexes[2]][1];
+		if (a > b || b > c || a > c) {
+			System.err.println("Zle sorotwanie indeksow: " + a + " " + b + " " + c);
+		}
+	}
+
+	private static double safeDivide(double a, double b) {
+		try {
+			return a / b;
+		} catch (ArithmeticException e) {
+			System.err.println("Div 0");
+			return Double.POSITIVE_INFINITY;
+		}
+	}
+
+	private void gradientLine(int[] buff, int offset, int steps, int v1, int v2) {
+		int end = offset + steps;
+		// TODO: double -> int optimisation
+		double gradientStep = safeDivide(v2 - v1, steps);
+		if (steps > 0) {
+			for (; offset < end; ++offset) {
+				buff[offset] = applyBrigthness(buff[offset], (int) (v1 + gradientStep));
+			}
+		} else if (steps < 0) {
+			for (; offset >= end; --offset) {
+				buff[offset] = applyBrigthness(buff[offset], (int) (v1 - gradientStep));
+			}
+		} else {
+			buff[offset] = applyBrigthness(buff[offset], v1);
+		}
+	}
+
+	/**
+	 * @param buff
+	 * @param width buff's row width
+	 * @param indexes sorted indexes
+	 * @param corners unsorted corners
+	 * @param brightnesses unsorted brightnesses
+	 */
+	private void gradientTriangle(int[] buff, int width, int[] indexes,
+			int[][] corners, int[] brightnesses) {
+		int cx0 = corners[indexes[0]][0];
+		int cy0 = corners[indexes[0]][1];
+		int cb0 = brightnesses[indexes[0]];
+		int cx1 = corners[indexes[1]][0];
+		int cy1 = corners[indexes[1]][1];
+		int cb1 = brightnesses[indexes[1]];
+		int cx2 = corners[indexes[2]][0];
+		int cy2 = corners[indexes[2]][1];
+		int cb2 = brightnesses[indexes[2]];
+
+		int diffY_0_1 = cy1 - cy0;
+		int diffY_0_2 = cy2 - cy0;
+		int diffY_1_2 = cy2 - cy1;
+
+		double bStep0_1 = safeDivide(cb1 - cb0, diffY_0_1);
+		double bStep0_2 = safeDivide(cb2 - cb0, diffY_0_2);
+		double bStep1_2 = safeDivide(cb2 - cb1, diffY_1_2);
+
+		double xStep0_1 = safeDivide(cx1 - cx0, diffY_0_1);
+		double xStep0_2 = safeDivide(cx2 - cx0, diffY_0_2);
+		double xStep1_2 = safeDivide(cx2 - cx1, diffY_1_2);
+
+		double x1 = cx0, x2 = cx0;
+		double b1 = cb0, b2 = cb0;
+		int offset = 0;
+		for (int y = 0; y < diffY_0_1; ++y) {
+			gradientLine(buff, (int)(offset + x1), (int)(x2 - x1), (int) b1, (int) b2);
+			x1 += xStep0_1;
+			x2 += xStep0_2;
+			b1 += bStep0_1;
+			b2 += bStep0_2;
+			offset += width;
+		}
+	}
+
 	/**
 	 *
 	 * @param wall
 	 * @return true if wall is enlighten at all
 	 */
-	public boolean enlight(Wall wall, Matrix1x4 viewer, int size) {
-
+	public boolean enlight(Wall wall, Matrix1x4 viewer, int width, int height) {
 		this.viewer = viewer;
 
 		switch (shader) {
 			case GOURAUD:
-				
+				int brights[] = new int[4];
+				for (int i = 0; i < 4; ++i) {
+					brights[i] = calculateBrithness(wall.corners3D[i], wall.vector);
+				}
+
+				// podzial na 2 trojkaty
+				int[] triangle1Indexes = {0, 1, 2};
+				int[] triangle2Indexes = {0, 2, 3};
+
+				// sortowanie indeksow po y-kach pozycji punktow w 2D:
+				sortIndexes2D(triangle1Indexes, wall.corners2D);
+				sortIndexes2D(triangle2Indexes, wall.corners2D);
+
+				// rysowanie trojkatow:
+				gradientTriangle(wall.buff, width, triangle1Indexes, wall.corners2D, brights);
+				gradientTriangle(wall.buff, width, triangle2Indexes, wall.corners2D, brights);
+
+				break;
+			case PHONG:
 				break;
 			case FLAT:
 			default:
@@ -117,6 +233,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 					point.data[i] /= 4;
 				}
 				int bright = calculateBrithness(point, wall.vector);
+				int size = width * height;
 				for (int i = 0; i < size; ++i) {
 					wall.buff[i] = applyBrigthness(wall.buff[i], bright);
 				}
@@ -173,7 +290,6 @@ public class Lamp extends AbstractTransformChangeNotifier {
 	public void setM(double m) {
 		this.m = m;
 	}
-
 	protected BrickFrame frame;
 
 	public BrickFrame getFrame() {
@@ -183,5 +299,4 @@ public class Lamp extends AbstractTransformChangeNotifier {
 	public void setFrame(BrickFrame frame) {
 		this.frame = frame;
 	}
-
 }

@@ -25,7 +25,7 @@ public class Wall {
 
 	private boolean visible = false;
 	private static final int MAX_SIZE = 1200;
-	public int[][] corners = new int[4][];
+	public int[][] corners2D = new int[4][];
 	public Matrix1x4[] corners3D = new Matrix1x4[4];
 	public Vector[] viewerVectors = new Vector[4];
 	private int[] brightnesses = new int[4]; // 0-255
@@ -56,15 +56,15 @@ public class Wall {
 	}
 
 	public void setCorner(int num, int[] c, Matrix1x4 m) {
-		corners[num] = c;
+		corners2D[num] = c;
 		corners3D[num] = m;
 	}
 
 	public void setCorners(int[] c0, int[] c1, int[] c2, int[] c3) {
-		corners[0] = c0;
-		corners[1] = c1;
-		corners[2] = c2;
-		corners[3] = c3;
+		corners2D[0] = c0;
+		corners2D[1] = c1;
+		corners2D[2] = c2;
+		corners2D[3] = c3;
 	}
 
 	public void recalc(Matrix1x4 viewer) {
@@ -77,7 +77,7 @@ public class Wall {
 
 	public void reBuff(int width, int height, Lamp lamp) {
 		polygon = new Polygon();
-		for (int[] c : corners) {
+		for (int[] c : corners2D) {
 			polygon.addPoint(c[0] + width / 2, c[1] + height / 2);
 		}
 
@@ -117,7 +117,7 @@ public class Wall {
 				offset += dirtyX;
 			}
 
-			visible = lamp.enlight(this, viewer, dirtyX * dirtyY);
+			visible = lamp.enlight(this, viewer, dirtyX, dirtyY);
 
 			if (visible) {
 				image.getRaster().setDataElements(0, 0, dirtyX, dirtyY, buff);
@@ -139,7 +139,7 @@ public class Wall {
 		g.drawPolygon(polygon);
 //		int avgX = 0;
 //		int avgY = 0;
-//		for (int[] c : corners) {
+//		for (int[] c : corners2D) {
 //			avgX += c[0];
 //			avgY += c[1];
 //		}
@@ -158,7 +158,7 @@ public class Wall {
 	public String toString() {
 		String str = "{ ";
 		for (int i = 0; i < 4; ++i) {
-			str += corners[i][0] + " " + corners[i][1] + ", ";
+			str += corners2D[i][0] + " " + corners2D[i][1] + ", ";
 		}
 		str += "}";
 		return str;

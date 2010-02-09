@@ -29,7 +29,7 @@ public class Vector extends Matrix1x4 {
 
 	public Vector sum(Matrix1x4 other) {
 		Vector v = new Vector();
-		for(int i = 0; i < 4; ++i) {
+		for(int i = 0; i < 3; ++i) {
 			v.data[i] += other.data[i];
 		}
 		return v;
