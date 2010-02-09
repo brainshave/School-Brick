@@ -124,7 +124,7 @@ public class Wall {
 			}
 
 		} catch (ArrayIndexOutOfBoundsException e) {
-			System.err.println("Poza obszarem");
+			e.printStackTrace();
 		}
 		dirtyX = rect.width;
 		dirtyY = rect.height;
