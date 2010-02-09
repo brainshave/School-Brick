@@ -90,7 +90,9 @@ public class Wall {
 		int red = color.getRed();
 		int blue = color.getBlue();
 		int green = color.getGreen();
-		int colorInt = 0xff000000 + (red << 16) + (green << 8) + blue;
+
+		// BARDZO WAZNE: 0xfe po to by zaznaczyc oswietlone piksele!!
+		int colorInt = 0xfe000000 + (red << 16) + (green << 8) + blue;
 
 		int x = 0, y = 0;
 		if (rect.width > dirtyX) {

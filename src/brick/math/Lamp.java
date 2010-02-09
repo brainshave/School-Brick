@@ -70,6 +70,10 @@ public class Lamp extends AbstractTransformChangeNotifier {
 	}
 
 	public int applyBrigthness(int color, int brightness) {
+		int checkMask = 0x01000000;
+		if ((color & checkMask) != 0 || (color & 0xff000000) == 0) {
+			return color;
+		}
 		int mask = 0xff;
 		int tmp;
 		for (int k = 0; k < 19; k += 8) {
@@ -82,7 +86,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 			color = (color & ~mask) | (tmp << k);
 			mask <<= 8;
 		}
-		return color;
+		return color | checkMask;
 
 //					red = (((color & 0xff0000) * bright) >> 8) & 0xff0000;
 //					green = (((color & 0xff00) * bright) >> 8) & 0xff00;
@@ -95,7 +99,9 @@ public class Lamp extends AbstractTransformChangeNotifier {
 	public static void sortIndexes2D(int[] indexes, int[][] corners) {
 		for (int i = 0; i < indexes.length; ++i) {
 			for (int k = i + 1; k < indexes.length; ++k) {
-				if (corners[indexes[k]][1] < corners[indexes[i]][1]) {
+				int[] ci = corners[indexes[i]];
+				int[] ck = corners[indexes[k]];
+				if (ck[1] < ci[1] || (ck[1] == ci[1] && ck[0] < ci[0])) {
 					int tmp = indexes[k];
 					indexes[k] = indexes[i];
 					indexes[i] = tmp;
@@ -132,36 +138,47 @@ public class Lamp extends AbstractTransformChangeNotifier {
 
 	private void gradientLine(int[] buff, int offset, int steps, int v1, int v2) {
 		int end = offset + steps;
+
 		// TODO: double -> int optimisation?
+		steps += 2;
 		double gradientStep = safeDivide(v2 - v1, steps);
+		double gradVal = v1;
+		int tmp;
 		if (steps > 0) {
+			--offset;
+			++end;
 			//System.out.print("+");
 			for (; offset <= end; ++offset) {
 				try {
 					//buff[offset] = 0xff00ff00;
-					buff[offset] = applyBrigthness(buff[offset], (int) (v1 + gradientStep));
+					buff[offset] = applyBrigthness(buff[offset], (int) gradVal);
+
 				} catch (ArrayIndexOutOfBoundsException e) {
-					System.err.println(offset);
+					//System.err.println(offset);
 					//e.printStackTrace();
 				}
+				gradVal += gradientStep;
 			}
 		} else if (steps < 0) {
+			++offset;
+			--end;
 			//System.out.print("-");
 			for (; offset >= end; --offset) {
 				try {
 					//buff[offset] = 0xff0000ff;
-					buff[offset] = applyBrigthness(buff[offset], (int) (v1 + gradientStep));
+					buff[offset] = applyBrigthness(buff[offset], (int) gradVal);
 				} catch (ArrayIndexOutOfBoundsException e) {
-					System.err.println(offset);
+					//System.err.println(offset);
 					//e.printStackTrace();
 				}
+				gradVal -= gradientStep;
 			}
 		} else {
 			try {
 				buff[offset] = applyBrigthness(buff[offset], v1);
 			} catch (ArrayIndexOutOfBoundsException e) {
 				//e.printStackTrace();
-				System.err.println(offset);
+				//System.err.println(offset);
 			}
 		}
 	}
@@ -203,21 +220,38 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		double b1 = cb0, b2 = cb0;
 
 		for (int y = 0; y < diffY_0_1; ++y) {
-			gradientLine(buff, (int) (offset + x1), (int) (x2 - x1), (int) b1, (int) b2);
+			//sameRow((int)(offset + x1), (int)(offset + x1), width);
+			gradientLine(buff, (int) (offset + x1), (int) (x2 - x1 - 0.5), (int) b1, (int) b2);
 			x1 += xStep0_1;
 			x2 += xStep0_2;
 			b1 += bStep0_1;
 			b2 += bStep0_2;
 			offset += width;
 		}
+
+		// TODO: QUICK AND DIRTY!
+		if (diffY_0_1 == 0) {
+			x1 += width;
+		}
+
 		for (int y = diffY_0_1; y < diffY_0_2; ++y) {
-			gradientLine(buff, (int) (offset + x1), (int) (x2 - x1), (int) b1, (int) b2);
+			//sameRow((int)(offset + x1), (int)(offset + x1), width);
+			gradientLine(buff, (int) (offset + x1), (int) (x2 - x1 - 0.5), (int) b1, (int) b2);
 			x1 += xStep1_2;
 			x2 += xStep0_2;
 			b1 += bStep1_2;
 			b2 += bStep0_2;
 			offset += width;
 		}
+	}
+
+	public static boolean sameRow(int x1, int x2, int width) {
+		boolean val = (x1 / width) == (x2 / width);
+		if (!val) {
+			System.err.print("ROWS: X1: " + x1 / width + " ");
+			System.err.println("X2: " + x2 / width + "         " + val);
+		}
+		return val;
 	}
 
 	/**
@@ -242,63 +276,26 @@ public class Lamp extends AbstractTransformChangeNotifier {
 				// sortowanie indeksow po y-kach pozycji punktow w 2D:
 				sortIndexes2D(triangle1Indexes, wall.corners2D);
 				sortIndexes2D(triangle2Indexes, wall.corners2D);
-//				for (int i = 0; i < 3; ++i) {
-//					System.out.print("[" + wall.corners2D[triangle1Indexes[i]][0] + " " + wall.corners2D[triangle1Indexes[i]][1] + "] ");
-//				}
-//				System.out.print(": ");
-//				for (int i = 0; i < 3; ++i) {
-//					System.out.print("[" + wall.corners2D[triangle2Indexes[i]][0] + " " + wall.corners2D[triangle2Indexes[i]][1] + "] ");
-//				}
-//				System.out.println();
-
-				// rysowanie trojkatow:
-//				int offset = (wall.corners2D[triangle2Indexes[0]][1] - wall.corners2D[triangle1Indexes[0]][1])*width;
-//				int offset1, offset2;
-//				if(offset < 0) {
-//					offset1 = -offset;
-//					offset2 = 0;
-//				} else {
-//					offset2 = offset;
-//					offset1 = 0;
-//				}
-
-//				Polygon p1 = new Polygon();
-//				for (int i : triangle1Indexes) {
-//					int[] corner = wall.corners2D[i];
-//					p1.addPoint(corner[0], corner[1]);
-//				}
-//
-//				Polygon p2 = new Polygon();
-//				for (int i : triangle2Indexes) {
-//					int[] corner = wall.corners2D[i];
-//					p2.addPoint(corner[0], corner[1]);
-//				}
 
 				Polygon p = new Polygon();
 				for (int[] corner : wall.corners2D) {
 					p.addPoint(corner[0], corner[1]);
 				}
 
-//				int minX1 = p1.getBounds().x;
-//				int minY1 = p1.getBounds().y;
-//				int minX2 = p2.getBounds().x;
-//				int minY2 = p2.getBounds().y;
 				int minX = p.getBounds().x;
 				int minY = p.getBounds().y;
+
 				int xoffset = wall.corners2D[triangle1Indexes[0]][0] - minX;
 				int yoffset = wall.corners2D[triangle1Indexes[0]][1] - minY;
-				System.out.println("MinX: " + minX + ", MinY: " + minY);
-				System.out.println("Xoff: " + xoffset + ", YOff: " + yoffset);
-				//int offset1 = minX1 - minX + (minY1 - minY)*width + minX1 - wall.corners2D[triangle1Indexes[0]][0];
-				//int offset2 = minX2 - minX + (minY2 - minY)*width + minX2 - wall.corners2D[triangle2Indexes[0]][0];;
 				int offset1 = xoffset + (yoffset) * width;
+
 				xoffset = wall.corners2D[triangle2Indexes[0]][0] - minX;
 				yoffset = wall.corners2D[triangle2Indexes[0]][1] - minY;
 				int offset2 = xoffset + (yoffset) * width;
-				
+
 				gradientTriangle(wall.buff, offset1, width, triangle1Indexes, wall.corners2D, brights);
 				gradientTriangle(wall.buff, offset2, width, triangle2Indexes, wall.corners2D, brights);
-				wall.buff[offset1 + width * 2] = 0xffff0000;
+
 				break;
 			case PHONG:
 				break;
