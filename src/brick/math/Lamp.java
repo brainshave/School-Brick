@@ -140,17 +140,17 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		int end = offset + steps;
 
 		// TODO: double -> int optimisation?
-		steps += 2;
+//		steps += 2;
 		double gradientStep = safeDivide(v2 - v1, steps);
 		double gradVal = v1;
 		int tmp;
 		if (steps > 0) {
-			--offset;
-			++end;
+//			--offset;
+//			++end;
 			//System.out.print("+");
 			for (; offset <= end; ++offset) {
 				try {
-					//buff[offset] = 0xff00ff00;
+					//buff[offset] = 0xfe00ff00;
 					buff[offset] = applyBrigthness(buff[offset], (int) gradVal);
 
 				} catch (ArrayIndexOutOfBoundsException e) {
@@ -160,18 +160,19 @@ public class Lamp extends AbstractTransformChangeNotifier {
 				gradVal += gradientStep;
 			}
 		} else if (steps < 0) {
-			++offset;
-			--end;
+			//gradVal = v2;
+//			++offset;
+//			--end;
 			//System.out.print("-");
 			for (; offset >= end; --offset) {
 				try {
-					//buff[offset] = 0xff0000ff;
+					//buff[offset] = 0xfe0000ff;
 					buff[offset] = applyBrigthness(buff[offset], (int) gradVal);
 				} catch (ArrayIndexOutOfBoundsException e) {
 					//System.err.println(offset);
 					//e.printStackTrace();
 				}
-				gradVal -= gradientStep;
+				//gradVal -= gradientStep;
 			}
 		} else {
 			try {
@@ -183,6 +184,22 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		}
 	}
 
+	private static int diffY(int i1, int i2, int[] indexes, int[][] corners) {
+		return corners[indexes[i1]][1] - corners[indexes[i2]][1];
+	}
+
+	private static double stepX(int i1, int i2, int[] indexes, int[][] corners) {
+		return safeDivide(
+				corners[indexes[i1]][0] - corners[indexes[i2]][0],
+				diffY(i1, i2, indexes, corners));
+	}
+
+	private static double stepB(int i1, int i2, int[] indexes, int[] brightnesses, int[][] corners) {
+		return safeDivide(
+				brightnesses[indexes[i1]] - brightnesses[indexes[i2]],
+				diffY(i1, i2, indexes, corners));
+	}
+
 	/**
 	 * @param buff
 	 * @param width buff's row width
@@ -192,36 +209,27 @@ public class Lamp extends AbstractTransformChangeNotifier {
 	 */
 	private void gradientTriangle(int[] buff, int offset, int width, int[] indexes,
 			int[][] corners, int[] brightnesses) {
+		int diffY_0_1 = diffY(1, 0, indexes, corners);
+		int diffY_0_2 = diffY(2, 0, indexes, corners);
+		int diffY_1_2 = diffY(2, 1, indexes, corners);
 
-		int cx0 = corners[indexes[0]][0];
-		int cy0 = corners[indexes[0]][1];
-		int cb0 = brightnesses[indexes[0]];
-		int cx1 = corners[indexes[1]][0];
-		int cy1 = corners[indexes[1]][1];
-		int cb1 = brightnesses[indexes[1]];
-		int cx2 = corners[indexes[2]][0];
-		int cy2 = corners[indexes[2]][1];
-		int cb2 = brightnesses[indexes[2]];
+		double bStep0_1 = stepB(1, 0, indexes, brightnesses, corners);
+		double bStep0_2 = stepB(2, 0, indexes, brightnesses, corners);
+		double bStep1_2 = stepB(2, 1, indexes, brightnesses, corners);
 
-		int diffY_0_1 = cy1 - cy0;
-		int diffY_0_2 = cy2 - cy0;
-		int diffY_1_2 = cy2 - cy1;
+		double xStep0_1 = stepX(1, 0, indexes, corners);
+		double xStep0_2 = stepX(2, 0, indexes, corners);
+		double xStep1_2 = stepX(2, 1, indexes, corners);
 
-		double bStep0_1 = safeDivide(cb1 - cb0, diffY_0_1);
-		double bStep0_2 = safeDivide(cb2 - cb0, diffY_0_2);
-		double bStep1_2 = safeDivide(cb2 - cb1, diffY_1_2);
-
-		double xStep0_1 = safeDivide(cx1 - cx0, diffY_0_1);
-		double xStep0_2 = safeDivide(cx2 - cx0, diffY_0_2);
-		double xStep1_2 = safeDivide(cx2 - cx1, diffY_1_2);
 
 		double x1 = 0, x2 = 0;
 
-		double b1 = cb0, b2 = cb0;
+		double b1, b2;
+		b1 = b2 = brightnesses[indexes[0]];
 
 		for (int y = 0; y < diffY_0_1; ++y) {
 			//sameRow((int)(offset + x1), (int)(offset + x1), width);
-			gradientLine(buff, (int) (offset + x1), (int) (x2 - x1 - 0.5), (int) b1, (int) b2);
+			gradientLine(buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), (int) b1, (int) b2);
 			x1 += xStep0_1;
 			x2 += xStep0_2;
 			b1 += bStep0_1;
@@ -231,18 +239,19 @@ public class Lamp extends AbstractTransformChangeNotifier {
 
 		// TODO: QUICK AND DIRTY!
 		if (diffY_0_1 == 0) {
-			x1 += width;
+			//x1 += width;
 		}
 
 		for (int y = diffY_0_1; y < diffY_0_2; ++y) {
 			//sameRow((int)(offset + x1), (int)(offset + x1), width);
-			gradientLine(buff, (int) (offset + x1), (int) (x2 - x1 - 0.5), (int) b1, (int) b2);
+			gradientLine(buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), (int) b1, (int) b2);
 			x1 += xStep1_2;
 			x2 += xStep0_2;
 			b1 += bStep1_2;
 			b2 += bStep0_2;
 			offset += width;
 		}
+
 	}
 
 	public static boolean sameRow(int x1, int x2, int width) {
