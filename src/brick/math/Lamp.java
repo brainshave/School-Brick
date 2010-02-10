@@ -25,11 +25,8 @@ public class Lamp extends AbstractTransformChangeNotifier {
 
 	enum Shader {
 
-		FLAT, GOURAUD, PHONG
+		FLAT, GOURAUD_TRI, GOURAUD_RECT, PHONG
 	}
-	protected Shader shader = Shader.GOURAUD;
-	//private Vector lightVector = null;
-	private Matrix1x4 viewer;
 	private ComboBoxModel model = new DefaultComboBoxModel(Shader.values()) {
 
 		@Override
@@ -41,6 +38,9 @@ public class Lamp extends AbstractTransformChangeNotifier {
 			frame.repaint();
 		}
 	};
+	protected Shader shader = Shader.FLAT;
+	//private Vector lightVector = null;
+	private Matrix1x4 viewer;
 	private Matrix4x4 source, endPoint;
 	private final static double[][] CORNERS = {{0, - 2 * Brick.SIZE, - 2 * Brick.SIZE, 1}};
 
@@ -109,7 +109,37 @@ public class Lamp extends AbstractTransformChangeNotifier {
 			}
 		}
 
-		testSortedIndexes(indexes, corners);
+
+		if (indexes.length == 4) {
+//			int[][]predef = {{0,1,3,2},{1,0,2,3},{2,1,3,0},{3,0,2,1}};
+//			int x0 = corners[indexes[0]][0];
+//			int x1 = corners[indexes[1]][0];
+//			int x2 = corners[indexes[2]][0];
+//			int x3 = corners[indexes[3]][0];
+
+//			if((x0 < x1 && x2 > x3) || (x0 > x1 && x2 < x3)) {
+//				int tmp = indexes[1];
+//				indexes[1] = indexes[2];
+//				indexes[2] = tmp;
+//			}
+
+//			if ((x0 < x1 && x2 > x3)) {
+//				int tmp = indexes[2];
+//				indexes[2] = indexes[3];
+//				indexes[3] = tmp;
+//			}
+//			if (x1 < x0 && x2 > x1) {
+//				int tmp = indexes[1];
+//				indexes[1] = indexes[2];
+//				indexes[2] = tmp;
+//			}
+//			} else if  {
+//				int tmp = indexes[0];
+//				indexes[0] = indexes[1];
+//				indexes[1] = tmp;
+//			}
+		}
+		//testSortedIndexes(indexes, corners);
 
 //		int[][] sortedCorners = new int[3][];
 //		for(int i = 0; i < 3; ++i) {
@@ -141,12 +171,13 @@ public class Lamp extends AbstractTransformChangeNotifier {
 
 		// TODO: double -> int optimisation?
 //		steps += 2;
+		steps++;
 		double gradientStep = safeDivide(v2 - v1, steps);
 		double gradVal = v1;
 		int tmp;
 		if (steps > 0) {
 //			--offset;
-//			++end;
+			++end;
 			//System.out.print("+");
 			for (; offset <= end; ++offset) {
 				try {
@@ -161,7 +192,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 			}
 		} else if (steps < 0) {
 			//gradVal = v2;
-//			++offset;
+			++offset;
 //			--end;
 			//System.out.print("-");
 			for (; offset >= end; --offset) {
@@ -230,25 +261,30 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		for (int y = 0; y < diffY_0_1; ++y) {
 			//sameRow((int)(offset + x1), (int)(offset + x1), width);
 			gradientLine(buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), (int) b1, (int) b2);
+
 			x1 += xStep0_1;
-			x2 += xStep0_2;
 			b1 += bStep0_1;
+
+			x2 += xStep0_2;
 			b2 += bStep0_2;
+
 			offset += width;
 		}
-
+		b1 = brightnesses[indexes[1]];
 		// TODO: QUICK AND DIRTY!
 		if (diffY_0_1 == 0) {
-			//x1 += width;
+			x1 += width;
 		}
 
 		for (int y = diffY_0_1; y < diffY_0_2; ++y) {
 			//sameRow((int)(offset + x1), (int)(offset + x1), width);
 			gradientLine(buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), (int) b1, (int) b2);
 			x1 += xStep1_2;
-			x2 += xStep0_2;
 			b1 += bStep1_2;
+
+			x2 += xStep0_2;
 			b2 += bStep0_2;
+
 			offset += width;
 		}
 
@@ -263,6 +299,122 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		return val;
 	}
 
+	private void gouraudTriangles(Wall wall, int width) {
+		int brights[] = new int[4];
+		for (int i = 0; i < 4; ++i) {
+			brights[i] = calculateBrithness(wall.corners3D[i], wall.vector);
+		}
+
+		// podzial na 2 trojkaty
+		int[] triangle1Indexes = {0, 1, 2};
+		int[] triangle2Indexes = {0, 2, 3};
+
+		// sortowanie indeksow po y-kach pozycji punktow w 2D:
+		sortIndexes2D(triangle1Indexes, wall.corners2D);
+		sortIndexes2D(triangle2Indexes, wall.corners2D);
+
+		Polygon p = new Polygon();
+		for (int[] corner : wall.corners2D) {
+			p.addPoint(corner[0], corner[1]);
+		}
+
+		int minX = p.getBounds().x;
+		int minY = p.getBounds().y;
+
+		int xoffset = wall.corners2D[triangle1Indexes[0]][0] - minX;
+		int yoffset = wall.corners2D[triangle1Indexes[0]][1] - minY;
+		int offset1 = xoffset + (yoffset) * width;
+
+		xoffset = wall.corners2D[triangle2Indexes[0]][0] - minX;
+		yoffset = wall.corners2D[triangle2Indexes[0]][1] - minY;
+		int offset2 = xoffset + (yoffset) * width;
+
+		gradientTriangle(wall.buff, offset1, width, triangle1Indexes, wall.corners2D, brights);
+		gradientTriangle(wall.buff, offset2, width, triangle2Indexes, wall.corners2D, brights);
+	}
+
+	private void gouraudRectangle(Wall wall, int width) {
+
+		int brights[] = new int[4];
+		for (int i = 0; i < 4; ++i) {
+			brights[i] = calculateBrithness(wall.corners3D[i], wall.vector);
+		}
+
+		int[] indexes = {0, 1, 2, 3};
+		sortIndexes2D(indexes, wall.corners2D);
+
+		Polygon p = new Polygon();
+		for (int[] corner : wall.corners2D) {
+			p.addPoint(corner[0], corner[1]);
+		}
+
+		int xoffset = wall.corners2D[indexes[0]][0] - p.getBounds().x;
+		int yoffset = wall.corners2D[indexes[0]][1] - p.getBounds().y;
+		int offset = xoffset + (yoffset) * width;
+
+		int diffY_0_1 = diffY(1, 0, indexes, wall.corners2D);
+		int diffY_1_2 = diffY(2, 1, indexes, wall.corners2D);
+		int diffY_2_3 = diffY(3, 2, indexes, wall.corners2D);
+
+		double stepX_0_1 = stepX(1, 0, indexes, wall.corners2D);
+		double stepX_1_3 = stepX(3, 1, indexes, wall.corners2D);
+		double stepX_0_2 = stepX(2, 0, indexes, wall.corners2D);
+		double stepX_2_3 = stepX(3, 2, indexes, wall.corners2D);
+
+		double stepB_0_1 = stepB(1, 0, indexes, brights, wall.corners2D);
+		double stepB_1_3 = stepB(3, 1, indexes, brights, wall.corners2D);
+		double stepB_0_2 = stepB(2, 0, indexes, brights, wall.corners2D);
+		double stepB_2_3 = stepB(3, 2, indexes, brights, wall.corners2D);
+
+		double x1,
+				x2;
+		x1 = x2 = 0;
+		double b1,
+				b2;
+		b1 = b2 = brights[indexes[0]];
+
+		int y;
+		for (y = 0; y < diffY_0_1; ++y) {
+
+			gradientLine(wall.buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), (int) b1, (int) b2);
+
+			x1 += stepX_0_2;
+			b1 += stepB_0_2;
+
+			x2 += stepX_0_1;
+			b2 += stepB_0_1;
+
+			offset += width;
+		}
+		if (diffY_0_1 == 0) {
+			x2 = width;
+		}
+		for (y = 0; y < diffY_1_2; ++y) {
+
+			gradientLine(wall.buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), (int) b1, (int) b2);
+
+			x1 += stepX_0_2;
+			b1 += stepB_0_2;
+
+			x2 += stepX_1_3;
+			b2 += stepB_1_3;
+
+			offset += width;
+		}
+		for (y = 0; y < diffY_2_3; ++y) {
+
+			gradientLine(wall.buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), (int) b1, (int) b2);
+
+			x1 += stepX_2_3;
+			b1 += stepB_2_3;
+
+			x2 += stepX_1_3;
+			b2 += stepB_1_3;
+
+			offset += width;
+		}
+	}
+
 	/**
 	 *
 	 * @param wall
@@ -272,42 +424,15 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		this.viewer = viewer;
 
 		switch (shader) {
-			case GOURAUD:
-				int brights[] = new int[4];
-				for (int i = 0; i < 4; ++i) {
-					brights[i] = calculateBrithness(wall.corners3D[i], wall.vector);
-				}
-
-				// podzial na 2 trojkaty
-				int[] triangle1Indexes = {0, 1, 2};
-				int[] triangle2Indexes = {0, 2, 3};
-
-				// sortowanie indeksow po y-kach pozycji punktow w 2D:
-				sortIndexes2D(triangle1Indexes, wall.corners2D);
-				sortIndexes2D(triangle2Indexes, wall.corners2D);
-
-				Polygon p = new Polygon();
-				for (int[] corner : wall.corners2D) {
-					p.addPoint(corner[0], corner[1]);
-				}
-
-				int minX = p.getBounds().x;
-				int minY = p.getBounds().y;
-
-				int xoffset = wall.corners2D[triangle1Indexes[0]][0] - minX;
-				int yoffset = wall.corners2D[triangle1Indexes[0]][1] - minY;
-				int offset1 = xoffset + (yoffset) * width;
-
-				xoffset = wall.corners2D[triangle2Indexes[0]][0] - minX;
-				yoffset = wall.corners2D[triangle2Indexes[0]][1] - minY;
-				int offset2 = xoffset + (yoffset) * width;
-
-				gradientTriangle(wall.buff, offset1, width, triangle1Indexes, wall.corners2D, brights);
-				gradientTriangle(wall.buff, offset2, width, triangle2Indexes, wall.corners2D, brights);
-
+			case GOURAUD_TRI:
+				gouraudTriangles(wall, width);
+				break;
+			case GOURAUD_RECT:
+				gouraudRectangle(wall, width);
 				break;
 			case PHONG:
 				break;
+
 			case FLAT:
 			default:
 				// obliczanie sredniego punktu:
