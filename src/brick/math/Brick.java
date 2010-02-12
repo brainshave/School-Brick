@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package brick.math;
 
 import brick.image.TransformsChangeNotifyer;
@@ -74,11 +70,6 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 	}
 
 	public void paint(Graphics2D g, int width, int height) {
-//		for (int i = 0; i < 6; ++i) {
-//			if (walls[i].isVisible()) {
-//				walls[i].paint(g, width, height, lamp);
-//			}
-//		}
 		for (Wall w : walls) {
 			if(w.isVisible()) {
 				w.reBuff(width, height, lamp);
