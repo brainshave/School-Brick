@@ -34,7 +34,7 @@ public class Wall {
 	private int num = -1;
 	public int[] buff = new int[MAX_SIZE * MAX_SIZE];
 	BufferedImage image = new BufferedImage(MAX_SIZE, MAX_SIZE, BufferedImage.TYPE_INT_ARGB);
-	private int dirtyX = MAX_SIZE, dirtyY = MAX_SIZE;
+	private int dirtyX = 0, dirtyY = 0;
 	public Polygon polygon;
 	public Rectangle rect;
 	public Vector vector;
@@ -119,7 +119,9 @@ public class Wall {
 				offset += dirtyX;
 			}
 
-			visible = lamp.enlight(this, viewer, dirtyX, dirtyY);
+			if (lamp != null) {
+				visible = lamp.enlight(this, viewer, dirtyX, dirtyY);
+			}
 
 			if (visible) {
 				image.getRaster().setDataElements(0, 0, dirtyX, dirtyY, buff);
