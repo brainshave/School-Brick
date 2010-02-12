@@ -9,7 +9,7 @@ package brick.math;
  *
  * @author Szymon
  */
-public class Matrix1x4 {
+public class Matrix1x4 implements Cloneable {
 	public double[] data;
 
 	public Matrix1x4() {
@@ -41,6 +41,18 @@ public class Matrix1x4 {
 		}
 		return m;
 	}
+	
+	/**
+	 * 
+	 * @param other
+	 * @return THIS
+	 */
+	public Matrix1x4 accumulate(Matrix1x4 other) {
+		for(int i = 0; i < 4; ++i) {
+			data[i] += other.data[i];
+		}
+		return this;
+	}
 
 	@Override
 	public String toString() {
@@ -50,5 +62,13 @@ public class Matrix1x4 {
 		}
 		return str + "]";
 	}
-	
+
+	@Override
+	public Matrix1x4 clone() {
+		Matrix1x4 m = new Matrix1x4();
+		for(int i = 0; i < 4; ++i) {
+			m.data[i] = this.data[i];
+		}
+		return m;
+	}
 }

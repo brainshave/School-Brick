@@ -168,9 +168,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		int end = offset + steps;
 
 		// TODO: double -> int optimisation?
-//		steps += 2;
-		steps++;
-		double gradientStep = safeDivide(v2 - v1, steps);
+		double gradientStep = safeDivide(v2 - v1, Math.abs(steps) +1);
 		double gradVal = v1;
 		int tmp;
 		if (steps > 0) {
@@ -189,7 +187,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 				gradVal += gradientStep;
 			}
 		} else if (steps < 0) {
-			//gradVal = v2;
+			//gradVal = v1;
 			++offset;
 //			--end;
 			//System.out.print("-");
@@ -201,7 +199,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 					//System.err.println(offset);
 					//e.printStackTrace();
 				}
-				//gradVal -= gradientStep;
+				gradVal += gradientStep;
 			}
 		} else {
 			try {
@@ -209,6 +207,42 @@ public class Lamp extends AbstractTransformChangeNotifier {
 			} catch (ArrayIndexOutOfBoundsException e) {
 				//e.printStackTrace();
 				//System.err.println(offset);
+			}
+		}
+	}
+
+	private void gradientLine(int[] buff, int offset, int steps, Matrix1x4 p1, Matrix1x4 p2, Vector wallNormVec) {
+		int end = offset + steps;
+		//steps++;
+		Matrix1x4 tmpPoint = p1.clone();
+		Vector vectorStep = stepVector(p1, p2, Math.abs(steps) + 1);
+		if (steps > 0) {
+			++end;
+			for (; offset <= end; ++offset) {
+				try {
+					//buff[offset] = 0xfe00ff00;
+					buff[offset] = applyBrigthness(buff[offset], calculateBrithness(tmpPoint, wallNormVec));
+
+				} catch (ArrayIndexOutOfBoundsException e) {
+					//System.err.println(offset);
+					//e.printStackTrace();
+				}
+				p1.accumulate(vectorStep);
+			}
+		} else if (steps < 0) {
+			//gradVal = v2;
+			++offset;
+//			--end;
+			//System.out.print("-");
+			for (; offset >= end; --offset) {
+				try {
+					//buff[offset] = 0xfe0000ff;
+					buff[offset] = applyBrigthness(buff[offset], calculateBrithness(tmpPoint, wallNormVec));
+				} catch (ArrayIndexOutOfBoundsException e) {
+					//System.err.println(offset);
+					//e.printStackTrace();
+				}
+				p1.accumulate(vectorStep);
 			}
 		}
 	}
@@ -229,6 +263,21 @@ public class Lamp extends AbstractTransformChangeNotifier {
 				diffY(i1, i2, indexes, corners));
 	}
 
+	private static Vector stepVector(Matrix1x4 from, Matrix1x4 to, double steps) {
+		Vector v = new Vector(from, to);
+		for (int i = 0; i < 4; ++i) {
+			v.data[i] /= steps;
+		}
+		return v;
+	}
+
+	private static Vector stepVector(int i1, int i2, int[] indexes,
+			Matrix1x4[] corners3D, int[][] corners2D) {
+
+		double steps = diffY(i1, i2, indexes, corners2D);
+		return stepVector(corners3D[indexes[i1]], corners3D[indexes[i2]], steps);
+	}
+
 	/**
 	 * @param buff
 	 * @param width buff's row width
@@ -236,7 +285,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 	 * @param wall.corners2D unsorted corners
 	 * @param brightnesses unsorted brightnesses
 	 */
-	private void gradientTriangle(Wall wall, int offset, int width, int[] indexes, int[] brightnesses) {
+	private void gouraudTriangle(Wall wall, int offset, int width, int[] indexes, int[] brightnesses) {
 		int diffY_0_1 = diffY(1, 0, indexes, wall.corners2D);
 		int diffY_0_2 = diffY(2, 0, indexes, wall.corners2D);
 		int diffY_1_2 = diffY(2, 1, indexes, wall.corners2D);
@@ -287,6 +336,52 @@ public class Lamp extends AbstractTransformChangeNotifier {
 
 	}
 
+	private void phongTriangle(Wall wall, int offset, int width, int[] indexes) {
+		int diffY_0_1 = diffY(1, 0, indexes, wall.corners2D);
+		int diffY_0_2 = diffY(2, 0, indexes, wall.corners2D);
+		int diffY_1_2 = diffY(2, 1, indexes, wall.corners2D);
+
+		double xStep_0_1 = stepX(1, 0, indexes, wall.corners2D);
+		double xStep_0_2 = stepX(2, 0, indexes, wall.corners2D);
+		double xStep_1_2 = stepX(2, 1, indexes, wall.corners2D);
+
+		Vector vStep_0_1 = stepVector(1, 0, indexes, wall.corners3D, wall.corners2D);
+		Vector vStep_0_2 = stepVector(2, 0, indexes, wall.corners3D, wall.corners2D);
+		Vector vStep_1_2 = stepVector(2, 1, indexes, wall.corners3D, wall.corners2D);
+
+		double x1 = 0, x2 = 0;
+		Matrix1x4 p1, p2;
+		p1 = p2 = wall.corners3D[indexes[0]];
+
+		for (int y = 0; y < diffY_0_1; ++y) {
+			gradientLine(wall.buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), p1, p2, wall.vector);
+			
+			x1 += xStep_0_1;
+			p1.accumulate(vStep_0_1);
+
+			x2 += xStep_0_2;
+			p2.accumulate(vStep_0_2);
+			offset += width;
+		}
+
+		p1 = wall.corners3D[indexes[1]];
+
+		if (diffY_0_1 == 0) {
+			x1 += width;
+		}
+
+		for (int y = diffY_0_1; y < diffY_0_2; ++y) {
+			gradientLine(wall.buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), p1, p2, wall.vector);
+
+			x1 += xStep_1_2;
+			p1.accumulate(vStep_1_2);
+
+			x2 += xStep_0_2;
+			p2.accumulate(vStep_0_2);
+			offset += width;
+		}
+	}
+
 	public static boolean sameRow(int x1, int x2, int width) {
 		boolean val = (x1 / width) == (x2 / width);
 		if (!val) {
@@ -296,7 +391,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		return val;
 	}
 
-	private void gouraudTriangles(Wall wall, int width) {
+	private void enlightTriangles(Wall wall, int width) {
 		int brights[] = new int[4];
 		for (int i = 0; i < 4; ++i) {
 			brights[i] = calculateBrithness(wall.corners3D[i], wall.vector);
@@ -319,8 +414,11 @@ public class Lamp extends AbstractTransformChangeNotifier {
 			int xoffset = wall.corners2D[indexes[0]][0] - minX;
 			int yoffset = wall.corners2D[indexes[0]][1] - minY;
 			int offset = xoffset + yoffset * width;
-
-			gradientTriangle(wall, offset, width, indexes, brights);
+			if(shader == Shader.PHONG) {
+				phongTriangle(wall, offset, width, indexes);
+			} else {
+				gouraudTriangle(wall, offset, width, indexes, brights);
+			}
 		}
 	}
 
@@ -417,7 +515,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		switch (shader) {
 			case GOURAUD_TRI:
 			case PHONG:
-				gouraudTriangles(wall, width);
+				enlightTriangles(wall, width);
 				break;
 			case GOURAUD_RECT:
 				gouraudRectangle(wall, width);
