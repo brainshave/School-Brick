@@ -116,13 +116,11 @@ public class Lamp extends AbstractTransformChangeNotifier {
 //			int x1 = corners[indexes[1]][0];
 //			int x2 = corners[indexes[2]][0];
 //			int x3 = corners[indexes[3]][0];
-
 //			if((x0 < x1 && x2 > x3) || (x0 > x1 && x2 < x3)) {
 //				int tmp = indexes[1];
 //				indexes[1] = indexes[2];
 //				indexes[2] = tmp;
 //			}
-
 //			if ((x0 < x1 && x2 > x3)) {
 //				int tmp = indexes[2];
 //				indexes[2] = indexes[3];
@@ -235,22 +233,21 @@ public class Lamp extends AbstractTransformChangeNotifier {
 	 * @param buff
 	 * @param width buff's row width
 	 * @param indexes sorted indexes
-	 * @param corners unsorted corners
+	 * @param wall.corners2D unsorted corners
 	 * @param brightnesses unsorted brightnesses
 	 */
-	private void gradientTriangle(int[] buff, int offset, int width, int[] indexes,
-			int[][] corners, int[] brightnesses) {
-		int diffY_0_1 = diffY(1, 0, indexes, corners);
-		int diffY_0_2 = diffY(2, 0, indexes, corners);
-		int diffY_1_2 = diffY(2, 1, indexes, corners);
+	private void gradientTriangle(Wall wall, int offset, int width, int[] indexes, int[] brightnesses) {
+		int diffY_0_1 = diffY(1, 0, indexes, wall.corners2D);
+		int diffY_0_2 = diffY(2, 0, indexes, wall.corners2D);
+		int diffY_1_2 = diffY(2, 1, indexes, wall.corners2D);
 
-		double bStep0_1 = stepB(1, 0, indexes, brightnesses, corners);
-		double bStep0_2 = stepB(2, 0, indexes, brightnesses, corners);
-		double bStep1_2 = stepB(2, 1, indexes, brightnesses, corners);
+		double bStep0_1 = stepB(1, 0, indexes, brightnesses, wall.corners2D);
+		double bStep0_2 = stepB(2, 0, indexes, brightnesses, wall.corners2D);
+		double bStep1_2 = stepB(2, 1, indexes, brightnesses, wall.corners2D);
 
-		double xStep0_1 = stepX(1, 0, indexes, corners);
-		double xStep0_2 = stepX(2, 0, indexes, corners);
-		double xStep1_2 = stepX(2, 1, indexes, corners);
+		double xStep0_1 = stepX(1, 0, indexes, wall.corners2D);
+		double xStep0_2 = stepX(2, 0, indexes, wall.corners2D);
+		double xStep1_2 = stepX(2, 1, indexes, wall.corners2D);
 
 
 		double x1 = 0, x2 = 0;
@@ -260,7 +257,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 
 		for (int y = 0; y < diffY_0_1; ++y) {
 			//sameRow((int)(offset + x1), (int)(offset + x1), width);
-			gradientLine(buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), (int) b1, (int) b2);
+			gradientLine(wall.buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), (int) b1, (int) b2);
 
 			x1 += xStep0_1;
 			b1 += bStep0_1;
@@ -271,14 +268,14 @@ public class Lamp extends AbstractTransformChangeNotifier {
 			offset += width;
 		}
 		b1 = brightnesses[indexes[1]];
-		// TODO: QUICK AND DIRTY!
+
 		if (diffY_0_1 == 0) {
 			x1 += width;
 		}
 
 		for (int y = diffY_0_1; y < diffY_0_2; ++y) {
 			//sameRow((int)(offset + x1), (int)(offset + x1), width);
-			gradientLine(buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), (int) b1, (int) b2);
+			gradientLine(wall.buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), (int) b1, (int) b2);
 			x1 += xStep1_2;
 			b1 += bStep1_2;
 
@@ -306,12 +303,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		}
 
 		// podzial na 2 trojkaty
-		int[] triangle1Indexes = {0, 1, 2};
-		int[] triangle2Indexes = {0, 2, 3};
-
-		// sortowanie indeksow po y-kach pozycji punktow w 2D:
-		sortIndexes2D(triangle1Indexes, wall.corners2D);
-		sortIndexes2D(triangle2Indexes, wall.corners2D);
+		int[][] triangleIndexes = {{0, 1, 2}, {0, 2, 3}};
 
 		Polygon p = new Polygon();
 		for (int[] corner : wall.corners2D) {
@@ -321,16 +313,15 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		int minX = p.getBounds().x;
 		int minY = p.getBounds().y;
 
-		int xoffset = wall.corners2D[triangle1Indexes[0]][0] - minX;
-		int yoffset = wall.corners2D[triangle1Indexes[0]][1] - minY;
-		int offset1 = xoffset + (yoffset) * width;
+		for (int[] indexes : triangleIndexes) {
+			sortIndexes2D(indexes, wall.corners2D);
 
-		xoffset = wall.corners2D[triangle2Indexes[0]][0] - minX;
-		yoffset = wall.corners2D[triangle2Indexes[0]][1] - minY;
-		int offset2 = xoffset + (yoffset) * width;
+			int xoffset = wall.corners2D[indexes[0]][0] - minX;
+			int yoffset = wall.corners2D[indexes[0]][1] - minY;
+			int offset = xoffset + yoffset * width;
 
-		gradientTriangle(wall.buff, offset1, width, triangle1Indexes, wall.corners2D, brights);
-		gradientTriangle(wall.buff, offset2, width, triangle2Indexes, wall.corners2D, brights);
+			gradientTriangle(wall, offset, width, indexes, brights);
+		}
 	}
 
 	private void gouraudRectangle(Wall wall, int width) {
@@ -425,12 +416,11 @@ public class Lamp extends AbstractTransformChangeNotifier {
 
 		switch (shader) {
 			case GOURAUD_TRI:
+			case PHONG:
 				gouraudTriangles(wall, width);
 				break;
 			case GOURAUD_RECT:
 				gouraudRectangle(wall, width);
-				break;
-			case PHONG:
 				break;
 
 			case FLAT:
