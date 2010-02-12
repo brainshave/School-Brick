@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package brick.image;
 
 import brick.math.Lamp;
@@ -48,13 +44,6 @@ public class Wall {
 		this.num = num;
 	}
 
-	public Wall(int[][] images) {
-		if (images.length == 0) {
-			throw new ArrayIndexOutOfBoundsException("There must be at least one image per wall.");
-		}
-		this.images = images;
-	}
-
 	public void setCorner(int num, int[] c, Matrix1x4 m) {
 		corners2D[num] = c;
 		corners3D[num] = m;
@@ -83,15 +72,11 @@ public class Wall {
 
 		rect = polygon.getBounds();
 
-		//g.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 50));
-		//g.setColor(color);
-		//g.fillPolygon(p);
-
 		int red = color.getRed();
 		int blue = color.getBlue();
 		int green = color.getGreen();
 
-		// BARDZO WAZNE: 0xfe po to by zaznaczyc oswietlone piksele!!
+		// BARDZO WAZNE: 0xfe w alpha po to by zaznaczyc oswietlone piksele!!
 		int colorInt = 0xfe000000 + (red << 16) + (green << 8) + blue;
 
 		int x = 0, y = 0;
@@ -149,7 +134,7 @@ public class Wall {
 //		}
 //		avgX /= 4;
 //		avgY /= 4;
-		//g.drawString(String.valueOf(num), avgX + width / 2, avgY + height / 2);
+		//g.drawString(String.valueOf(num), avgX + rect.width / 2, avgY + rect.height / 2);
 	}
 
 	public void paintRect(Graphics2D g, int x, int y, int width, int height) {

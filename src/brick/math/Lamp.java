@@ -9,7 +9,6 @@ import brick.image.Wall;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
-import java.awt.Rectangle;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 
@@ -39,9 +38,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		}
 	};
 	protected Shader shader = Shader.FLAT;
-	//private Vector lightVector = null;
 	private Matrix1x4 viewer;
-	private Matrix4x4 source, endPoint;
 	private final static double[][] CORNERS = {{0, - 2 * Brick.SIZE, - 2 * Brick.SIZE, 1}};
 
 	public Lamp() {
@@ -50,8 +47,6 @@ public class Lamp extends AbstractTransformChangeNotifier {
 	}
 
 	public int calculateBrithness(Matrix1x4 point, Vector vector) {
-		//return kd *
-		//return 0;
 		Vector e = new Vector(point, viewer).normalize();
 		Vector l = new Vector(point, corners3D[0]);
 
@@ -59,10 +54,8 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		double brightness = (kd * vector.cosNorm(l)
 				+ ks * Math.pow(e.cosNorm(l), m)) / (len * len);
 
-		//double brightness = (kd * vector.cosNorm(l)) / (len*len);
-		//System.out.println(brightness);
 		brightness *= 256 * 256;
-		//if (brightness > 255) brightness = 255;
+
 		if (brightness < 0) {
 			brightness = 0;
 		}
@@ -82,7 +75,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 			tmp >>>= 8;
 			if (tmp > 255) {
 				tmp = 255;
-			} else if(tmp < 0) {
+			} else if (tmp < 0) {
 				tmp = 0;
 			}
 			color = (color & ~mask) | (tmp << k);
@@ -103,42 +96,6 @@ public class Lamp extends AbstractTransformChangeNotifier {
 				}
 			}
 		}
-
-
-		if (indexes.length == 4) {
-//			int[][]predef = {{0,1,3,2},{1,0,2,3},{2,1,3,0},{3,0,2,1}};
-//			int x0 = corners[indexes[0]][0];
-//			int x1 = corners[indexes[1]][0];
-//			int x2 = corners[indexes[2]][0];
-//			int x3 = corners[indexes[3]][0];
-//			if((x0 < x1 && x2 > x3) || (x0 > x1 && x2 < x3)) {
-//				int tmp = indexes[1];
-//				indexes[1] = indexes[2];
-//				indexes[2] = tmp;
-//			}
-//			if ((x0 < x1 && x2 > x3)) {
-//				int tmp = indexes[2];
-//				indexes[2] = indexes[3];
-//				indexes[3] = tmp;
-//			}
-//			if (x1 < x0 && x2 > x1) {
-//				int tmp = indexes[1];
-//				indexes[1] = indexes[2];
-//				indexes[2] = tmp;
-//			}
-//			} else if  {
-//				int tmp = indexes[0];
-//				indexes[0] = indexes[1];
-//				indexes[1] = tmp;
-//			}
-		}
-		//testSortedIndexes(indexes, corners);
-
-//		int[][] sortedCorners = new int[3][];
-//		for(int i = 0; i < 3; ++i) {
-//			sortedCorners[i] = corners[indexes[i]];
-//		}
-//		return sortedCorners;
 	}
 
 	public static void testSortedIndexes(int[] indexes, int[][] corners) {
@@ -162,79 +119,74 @@ public class Lamp extends AbstractTransformChangeNotifier {
 	private void gradientLine(int[] buff, int offset, int steps, int v1, int v2) {
 		int end = offset + steps;
 
-		// TODO: double -> int optimisation?
 		double gradientStep = safeDivide(v2 - v1, Math.abs(steps) + 1);
 		double gradVal = v1;
 		int tmp;
 		if (steps > 0) {
-//			--offset;
+
 			++end;
-			//System.out.print("+");
+
 			for (; offset <= end; ++offset) {
 				try {
-					//buff[offset] = 0xfe00ff00;
 					buff[offset] = applyBrigthness(buff[offset], (int) gradVal);
 
 				} catch (ArrayIndexOutOfBoundsException e) {
-					//System.err.println(offset);
-					//e.printStackTrace();
 				}
+
 				gradVal += gradientStep;
 			}
 		} else if (steps < 0) {
-			//gradVal = v1;
+
 			++offset;
-//			--end;
-			//System.out.print("-");
+
 			for (; offset >= end; --offset) {
 				try {
-					//buff[offset] = 0xfe0000ff;
 					buff[offset] = applyBrigthness(buff[offset], (int) gradVal);
+
 				} catch (ArrayIndexOutOfBoundsException e) {
-					//System.err.println(offset);
-					//e.printStackTrace();
 				}
+
 				gradVal += gradientStep;
 			}
 		} else {
 			try {
 				buff[offset] = applyBrigthness(buff[offset], v1);
 			} catch (ArrayIndexOutOfBoundsException e) {
-				//e.printStackTrace();
-				//System.err.println(offset);
 			}
 		}
 	}
 
 	private void gradientLine(int[] buff, int offset, int steps, Matrix1x4 p1, Matrix1x4 p2, Vector wallNormVec) {
+
 		int end = offset + steps;
-		//steps++;
 
 		Vector vectorStep = stepVector(p1, p2, Math.abs(steps) + 1);
 
 		Matrix1x4 tmpPoint = p1.clone();
 		if (steps > 0) {
+
 			++end;
+
 			for (; offset <= end; ++offset) {
 				try {
-					//buff[offset] = 0xfe00ff00;
 					buff[offset] = applyBrigthness(buff[offset], calculateBrithness(tmpPoint, wallNormVec));
 
 				} catch (ArrayIndexOutOfBoundsException e) {
-					//System.err.println(offset);
-					//e.printStackTrace();
 				}
+
 				tmpPoint.accumulate(vectorStep);
 			}
 		} else if (steps < 0) {
+
 			++offset;
-			//Matrix1x4 tmpPoint = p2.clone();
+
 			for (; offset >= end; --offset) {
 				try {
-					//buff[offset] = 0xfe0000ff;
 					buff[offset] = applyBrigthness(buff[offset], calculateBrithness(tmpPoint, wallNormVec));
+
 				} catch (ArrayIndexOutOfBoundsException e) {
 				}
+
 				tmpPoint.accumulate(vectorStep);
 			}
 		}
@@ -413,6 +365,11 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		}
 	}
 
+	/**
+	 * Niedokonczona implementacja usredniania Gourouda dla calego czworokata
+	 * @param wall
+	 * @param width
+	 */
 	private void gouraudRectangle(Wall wall, int width) {
 
 		int brights[] = new int[4];
@@ -446,11 +403,11 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		double stepB_0_2 = stepB(2, 0, indexes, brights, wall.corners2D);
 		double stepB_2_3 = stepB(3, 2, indexes, brights, wall.corners2D);
 
-		double x1,
-				x2;
-		x1 = x2 = 0;
-		double b1,
-				b2;
+		double x1 = 0;
+		double x2 = 0;
+		double b1;
+		double b2;
+
 		b1 = b2 = brights[indexes[0]];
 
 		int y;
@@ -508,6 +465,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 			case PHONG:
 				enlightTriangles(wall, width);
 				break;
+
 			case GOURAUD_RECT:
 				gouraudRectangle(wall, width);
 				break;
@@ -537,16 +495,16 @@ public class Lamp extends AbstractTransformChangeNotifier {
 	}
 
 	public void recalcThis() {
-		//lightVector = new Vector(corners3D[1], corners3D[0]);
 	}
 
 	@Override
 	public void paint(Graphics2D g, int width, int height) {
 		g.setColor(Color.YELLOW);
 		g.fillOval(corners2D[0][0] + width / 2 - 3, corners2D[0][1] + height / 2 - 3, 6, 6);
-//		g.setColor(Color.GRAY);
-//		g.fillOval(corners2D[1][0] + width / 2 - 3, corners2D[1][1] + height / 2 - 3, 6, 6);
 	}
+
+
+	// reszta to juz tylko gettery i settery
 
 	public ComboBoxModel getModel() {
 		return model;
