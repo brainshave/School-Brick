@@ -8,8 +8,8 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Klasa przechowująca informację o obrazkach umieszczonych na tej ścianie
@@ -27,7 +27,9 @@ public class Wall {
 	public Matrix1x4[] corners3D = new Matrix1x4[4];
 	public Vector[] viewerVectors = new Vector[4];
 	private int num = -1;
-	List<PrimitiveImage> images = new LinkedList<PrimitiveImage>();
+	LinkedList<PrimitiveImage> images = new LinkedList<PrimitiveImage>();
+	Iterator<PrimitiveImage> imagesIterator = null;
+	PrimitiveImage activeImage = null;
 	public int[] buff = new int[MAX_SIZE * MAX_SIZE];
 	BufferedImage image = new BufferedImage(MAX_SIZE, MAX_SIZE, BufferedImage.TYPE_INT_ARGB);
 	private int dirtyX = 0, dirtyY = 0;
@@ -48,7 +50,6 @@ public class Wall {
 		corners2D[num] = c;
 		corners3D[num] = m;
 	}
-
 
 	public void recalc(Matrix1x4 viewer) {
 		this.viewer = viewer;
@@ -135,6 +136,15 @@ public class Wall {
 	}
 
 	public void nextImage() {
+		if(imagesIterator == null || !imagesIterator.hasNext()) {
+			imagesIterator = images.iterator();
+		}
+		activeImage = imagesIterator.hasNext() ? imagesIterator.next() : null;
+	}
+
+	public void addImage(PrimitiveImage image) {
+		images.addFirst(image);
+		imagesIterator = images.iterator();
 	}
 
 	@Override

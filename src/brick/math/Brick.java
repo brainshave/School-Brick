@@ -137,6 +137,16 @@ public class Brick extends AbstractTransformChangeNotifier implements Transforms
 			}
 		}
 	}
+
+	public Wall getWallAt(int x, int y) {
+		for(Wall w : walls) {
+			if(w.isVisible() && w.polygon.contains(x, y)) {
+				return w;
+			}
+		}
+		return null;
+	}
+
 	protected Lamp lamp;
 
 	public Lamp getLamp() {
