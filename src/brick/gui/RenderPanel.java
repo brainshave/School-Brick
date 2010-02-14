@@ -17,7 +17,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.io.IOException;
@@ -68,9 +67,24 @@ public class RenderPanel extends JPanel {
 				} catch (IOException ex) {
 					JOptionPane.showMessageDialog(null, ex, "ERROR", JOptionPane.ERROR_MESSAGE);
 				}
-
+				System.gc();
 			}
 		});
+	}
+
+	@Override
+	public void paintComponent(Graphics g) {
+		if (g != null && this != null) {
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, this.getWidth(), this.getHeight());
+			//g.clearRect(0, 0, this.getWidth(), this.getHeight());
+		}
+		if (brick != null) {
+			brick.paint((Graphics2D) g, this.getWidth(), this.getHeight());
+		}
+		if (lamp != null) {
+			lamp.paint((Graphics2D) g, this.getWidth(), this.getHeight());
+		}
 	}
 
 	public Brick getBrick() {
@@ -90,18 +104,4 @@ public class RenderPanel extends JPanel {
 		this.lamp = lamp;
 	}
 
-	@Override
-	public void paintComponent(Graphics g) {
-		if (g != null && this != null) {
-			g.setColor(Color.BLACK);
-			g.fillRect(0, 0, this.getWidth(), this.getHeight());
-			//g.clearRect(0, 0, this.getWidth(), this.getHeight());
-		}
-		if (brick != null) {
-			brick.paint((Graphics2D) g, this.getWidth(), this.getHeight());
-		}
-		if (lamp != null) {
-			lamp.paint((Graphics2D) g, this.getWidth(), this.getHeight());
-		}
-	}
 }

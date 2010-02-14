@@ -192,23 +192,23 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		}
 	}
 
-	private static int diffY(int i1, int i2, int[] indexes, int[][] corners) {
+	public static int diffY(int i1, int i2, int[] indexes, int[][] corners) {
 		return corners[indexes[i1]][1] - corners[indexes[i2]][1];
 	}
 
-	private static double stepX(int i1, int i2, int[] indexes, int[][] corners) {
+	public static double stepX(int i1, int i2, int[] indexes, int[][] corners) {
 		return safeDivide(
 				corners[indexes[i1]][0] - corners[indexes[i2]][0],
 				diffY(i1, i2, indexes, corners));
 	}
 
-	private static double stepB(int i1, int i2, int[] indexes, int[] brightnesses, int[][] corners) {
+	public static double stepB(int i1, int i2, int[] indexes, int[] brightnesses, int[][] corners) {
 		return safeDivide(
 				brightnesses[indexes[i1]] - brightnesses[indexes[i2]],
 				diffY(i1, i2, indexes, corners));
 	}
 
-	private static Vector stepVector(Matrix1x4 from, Matrix1x4 to, double steps) {
+	public static Vector stepVector(Matrix1x4 from, Matrix1x4 to, double steps) {
 		Vector v = new Vector(from, to);
 		steps = Math.abs(steps);
 		for (int i = 0; i < 4; ++i) {
@@ -217,7 +217,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		return v;
 	}
 
-	private static Vector stepVector(int i1, int i2, int[] indexes,
+	public static Vector stepVector(int i1, int i2, int[] indexes,
 			Matrix1x4[] corners3D, int[][] corners2D) {
 
 		double steps = diffY(i1, i2, indexes, corners2D);

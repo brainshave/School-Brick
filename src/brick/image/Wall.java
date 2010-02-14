@@ -32,7 +32,7 @@ public class Wall {
 	PrimitiveImage activeImage = null;
 	public int[] buff = new int[MAX_SIZE * MAX_SIZE];
 	BufferedImage image = new BufferedImage(MAX_SIZE, MAX_SIZE, BufferedImage.TYPE_INT_ARGB);
-	private int dirtyX = 0, dirtyY = 0;
+	public int dirtyX = 0, dirtyY = 0;
 	public Polygon polygon;
 	public Rectangle rect;
 	public Vector vector;
@@ -72,7 +72,7 @@ public class Wall {
 		int green = color.getGreen();
 
 		// BARDZO WAZNE: 0xfe w alpha po to by zaznaczyc oswietlone piksele!!
-		int colorInt = 0xfe000000 + (red << 16) + (green << 8) + blue;
+		int colorInt = 0xfe000000 | (red << 16) | (green << 8) | blue;
 
 		int x = 0, y = 0;
 		if (rect.width > dirtyX) {
@@ -90,13 +90,17 @@ public class Wall {
 		}
 
 		try {
-			int offset = 0;
-			for (y = 0; y < dirtyY; ++y) {
-				for (x = 0; x < dirtyX; ++x) {
-					buff[offset + x] =
-							polygon.contains(x + rect.x, y + rect.y) ? colorInt : 0;
+			if (activeImage == null) {
+				int offset = 0;
+				for (y = 0; y < dirtyY; ++y) {
+					for (x = 0; x < dirtyX; ++x) {
+						buff[offset + x] =
+								polygon.contains(x + rect.x, y + rect.y) ? colorInt : 0;
+					}
+					offset += dirtyX;
 				}
-				offset += dirtyX;
+			} else {
+				activeImage.paintOn(this);
 			}
 
 			if (lamp != null) {
@@ -136,7 +140,7 @@ public class Wall {
 	}
 
 	public void nextImage() {
-		if(imagesIterator == null || !imagesIterator.hasNext()) {
+		if (imagesIterator == null || !imagesIterator.hasNext()) {
 			imagesIterator = images.iterator();
 		}
 		activeImage = imagesIterator.hasNext() ? imagesIterator.next() : null;
