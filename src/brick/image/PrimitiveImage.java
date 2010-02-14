@@ -35,9 +35,9 @@ public class PrimitiveImage {
 		} catch (InterruptedException ex) {
 			ex.printStackTrace();
 		}
-//		for(int i = 0; i < buff.length; ++i) {
-//			buff[i] &= 0xfeffffff;
-//		}
+		for (int i = 0; i < buff.length; ++i) {
+			//buff[i] &= 0xfeffffff;
+		}
 	}
 
 	public void paintOn(Wall wall) {
@@ -123,7 +123,7 @@ public class PrimitiveImage {
 	private void scanline(double x1, double y1, double x2, double y2,
 			int[] buffOut, int offset, int steps) {
 
-		int absSteps = Math.abs(steps) + 1;
+		int absSteps = Math.abs(steps);
 		//System.out.println("" + steps + " " + absSteps);
 		double stepX = ((double) (x2 - x1)) / absSteps;
 		double stepY = ((double) (y2 - y1)) / absSteps;
@@ -131,14 +131,14 @@ public class PrimitiveImage {
 		int end = offset + steps;
 
 		if (steps > 0) {
-			++end;
+			//++end;
 			for (; offset <= end; ++offset) {
 				buffOut[offset] = this.buff[(int) (x1 + y1 * width)];
 				x1 += stepX;
 				y1 += stepY;
 			}
-		} else {
-			++offset;
+		} else if (steps < 0) {
+			//++offset;
 			for (; offset >= end; --offset) {
 				buffOut[offset] = this.buff[(int) (x1 + y1 * width)];
 				x1 += stepX;
