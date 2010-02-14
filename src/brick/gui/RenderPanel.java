@@ -68,6 +68,7 @@ public class RenderPanel extends JPanel {
 					JOptionPane.showMessageDialog(null, ex, "ERROR", JOptionPane.ERROR_MESSAGE);
 				}
 				System.gc();
+				repaint();
 			}
 		});
 	}

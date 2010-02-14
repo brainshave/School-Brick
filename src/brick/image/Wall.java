@@ -8,8 +8,12 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Klasa przechowująca informację o obrazkach umieszczonych na tej ścianie
@@ -41,6 +45,13 @@ public class Wall {
 	public Wall() {
 	}
 
+	{
+		try {
+			this.addImage(new PrimitiveImage(new File("D:\\Szkola\\Grafika\\Brick\\wall.jpg")));
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
 	public Wall(Color color, int num) {
 		this.color = color;
 		this.num = num;
@@ -100,6 +111,7 @@ public class Wall {
 					offset += dirtyX;
 				}
 			} else {
+				//System.out.println("Painting on wall");
 				activeImage.paintOn(this);
 			}
 
@@ -149,6 +161,7 @@ public class Wall {
 	public void addImage(PrimitiveImage image) {
 		images.addFirst(image);
 		imagesIterator = images.iterator();
+		nextImage();
 	}
 
 	@Override
