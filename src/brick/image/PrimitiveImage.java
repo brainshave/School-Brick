@@ -86,9 +86,10 @@ public class PrimitiveImage {
 
 		int[][] triangleIndexes = {{0, 1, 2}, {0, 2, 3}};
 
-		for (int[] indexes : triangleIndexes) {
+		//for (int[] indexes : triangleIndexes) {
 
-			//int[] indexes = triangleIndexes[1];
+		{
+			int[] indexes = triangleIndexes[1];
 			Lamp.sortIndexes2D(indexes, wall.corners2D);
 
 
@@ -138,7 +139,7 @@ public class PrimitiveImage {
 
 			boolean flipX = false, flipY = false;
 
-			if(flipY) {
+			if (flipY) {
 				p1_Y = height;
 				p1_Y_step *= -1;
 				p2_Y = height;
@@ -210,7 +211,6 @@ public class PrimitiveImage {
 			//System.err.println("ERRR:" + this.buff.length + " " + e.getMessage());
 		}
 	}
-
 //		if (flipY) {
 //			y1 = height - 1 - y1;
 //			stepY *= -1;
