@@ -213,20 +213,30 @@ public class PrimitiveImage {
 			System.out.println("INdeyx: " + indexes[0] + " " + indexes[1]);
 			switch (indexes[0]) {
 				case 0: {
-					int[] steps = {diffY_0_1, diffY_1_2, diffY_0_2};
 					double[][] points = {{width, 0}, {width, 0}};
-					subroutine(
-							steps, points[0], points[1],
-							diffY_0_1, A, C,
-							diffY_1_2, B,
-							wall.buff, offset, wall.dirtyX,
-							xStep0_1, xStep1_2, xStep0_2, false, false);
+					if (indexes[1] == 1) {
+						int[] steps = {diffY_0_1, diffY_1_2, diffY_0_2};
+						subroutine(
+								steps, points[0], points[1],
+								diffY_0_1, A, C,
+								diffY_1_2, B,
+								wall.buff, offset, wall.dirtyX,
+								xStep0_1, xStep1_2, xStep0_2, false, false);
+					} else {
+						int[] steps = {diffY_0_2, -diffY_1_2, diffY_0_1};
+						subroutine(
+								steps, points[0], points[1],
+								diffY_0_1, C, A,
+								diffY_1_2, B,
+								wall.buff, offset, wall.dirtyX,
+								xStep0_1, xStep1_2, xStep0_2, false, false);
+					}
 					break;
 				}
 
 				case 1: {
 					double[][] points = {{0, 0}, {0, 0}};
-					if(indexes[1] == 0) {
+					if (indexes[1] == 0) {
 						int[] steps = {-diffY_0_1, diffY_0_2, diffY_1_2};
 
 						subroutine(
