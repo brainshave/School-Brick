@@ -90,7 +90,7 @@ public class PrimitiveImage {
 		//for (int[] indexes : triangleIndexes) {
 
 		{
-			int[] indexes = triangleIndexes[1];
+			int[] indexes = triangleIndexes[0];
 			Lamp.sortIndexes2D(indexes, wall.corners2D);
 
 
@@ -225,26 +225,47 @@ public class PrimitiveImage {
 				}
 
 				case 1: {
-					int[] steps = {-diffY_0_1, diffY_0_2, diffY_1_2};
 					double[][] points = {{0, 0}, {0, 0}};
-					subroutine(
-							steps, points[0], points[1],
-							diffY_0_1, A, B,
-							diffY_1_2, C,
-							wall.buff, offset, wall.dirtyX,
-							xStep0_1, xStep1_2, xStep0_2, false, false);
+					if(indexes[1] == 0) {
+						int[] steps = {-diffY_0_1, diffY_0_2, diffY_1_2};
+
+						subroutine(
+								steps, points[0], points[1],
+								diffY_0_1, A, B,
+								diffY_1_2, C,
+								wall.buff, offset, wall.dirtyX,
+								xStep0_1, xStep1_2, xStep0_2, false, false);
+					} else {
+						int[] steps = {-diffY_0_2, diffY_0_1, -diffY_1_2};
+
+						subroutine(
+								steps, points[0], points[1],
+								diffY_0_1, B, A,
+								diffY_1_2, C,
+								wall.buff, offset, wall.dirtyX,
+								xStep0_1, xStep1_2, xStep0_2, false, false);
+					}
 					break;
 				}
 				case 2: {
-					int[] steps = {diffY_1_2, -diffY_0_2, -diffY_0_1};
 					double[][] points = {{0, height}, {0, height}};
-					subroutine(
-							steps, points[0], points[1],
-							diffY_0_1, C, B,
-							diffY_1_2, A,
-							wall.buff, offset, wall.dirtyX,
-							xStep0_1, xStep1_2, xStep0_2, false, false);
-					break;
+					if (indexes[1] == 0) {
+						int[] steps = {diffY_1_2, -diffY_0_2, -diffY_0_1};
+						subroutine(
+								steps, points[0], points[1],
+								diffY_0_1, C, B,
+								diffY_1_2, A,
+								wall.buff, offset, wall.dirtyX,
+								xStep0_1, xStep1_2, xStep0_2, false, false);
+					} else {
+						int[] steps = {-diffY_1_2, -diffY_0_1, -diffY_0_2};
+						subroutine(
+								steps, points[0], points[1],
+								diffY_0_1, B, C,
+								diffY_1_2, A,
+								wall.buff, offset, wall.dirtyX,
+								xStep0_1, xStep1_2, xStep0_2, false, false);
+					}
 				}
 			}
 		}
@@ -300,7 +321,7 @@ public class PrimitiveImage {
 
 		for (int y = 0; y < secondLoopCycles; ++y) {
 			scanline(p1, p2, buffOut, (int) (offset + x1), (int) (x2 - x1 + 0.5), flipX, flipY);
-			
+
 			x1 += second_x1_inc;
 			p1[0] += scanImageSteps[second_P1_inc][0];
 			p1[1] += scanImageSteps[second_P1_inc][1];
@@ -334,8 +355,9 @@ public class PrimitiveImage {
 		}
 
 		if (flipX) {
-			x1 = width - x2;
+			x1 = x2;
 			stepX *= -1;
+			y1 = y2;
 		}
 
 		try {
