@@ -107,7 +107,7 @@ public class Lamp extends AbstractTransformChangeNotifier {
 		}
 	}
 
-	private static double safeDivide(double a, double b) {
+	public static double safeDivide(double a, double b) {
 		try {
 			return a / b;
 		} catch (ArithmeticException e) {
