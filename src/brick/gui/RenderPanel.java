@@ -18,6 +18,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -69,6 +71,19 @@ public class RenderPanel extends JPanel {
 				}
 				System.gc();
 				repaint();
+			}
+		});
+		this.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(brick != null) {
+					Wall w = brick.getWallAt(e.getX(), e.getY());
+					if(w != null) {
+						w.nextImage();
+						repaint();
+					}
+				}
 			}
 		});
 	}

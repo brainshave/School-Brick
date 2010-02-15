@@ -40,137 +40,10 @@ public class PrimitiveImage {
 			buff[i] &= 0xfeffffff;
 		}
 	}
-
-	public void paintOnTMP(Wall wall) {
-		for (int i = 0; i < wall.buff.length; ++i) {
-			wall.buff[i] = 0;
-		}
-
-		int offsetIn = 0;
-		int offsetOut = 0;
-		double pX = 0;
-		double pY = 0;
-		double pXstep = (double) width / (double) wall.rect.width;
-		double pYstep = (double) height / (double) wall.rect.height;
-
-		try {
-			for (int y = 0; y < height && y < wall.rect.height; ++y) {
-				for (int x = 0; x < width && x < wall.rect.width; ++x) {
-					if (wall.polygon.contains(wall.rect.x + x, wall.rect.y + y)) {
-						int val = buff[(int) pX + (int) (Math.floor(pY) * width)];
-						wall.buff[offsetOut + x] = val;
-					}
-					pX += pXstep;
-				}
-				pX = 0;
-				pY += pYstep;
-				offsetOut += wall.dirtyX;
-				offsetIn += width;
-			}
-		} catch (ArrayIndexOutOfBoundsException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void paintOnOLD(Wall wall) {
-		for (int i = 0; i < wall.buff.length; ++i) {
-			wall.buff[i] = 0;
-		}
-
-		Polygon p = new Polygon();
-		for (int[] corner : wall.corners2D) {
-			p.addPoint(corner[0], corner[1]);
-		}
-
-		int minX = p.getBounds().x;
-		int minY = p.getBounds().y;
-
-		int[][] triangleIndexes = {{0, 1, 2}, {0, 2, 3}};
-
-		for (int[] indexes : triangleIndexes) {
-
-//		{
-//			int[] indexes = triangleIndexes[0];
-//			Lamp.sortIndexes2D(indexes, wall.corners2D);
-
-
-			int xoffset = wall.corners2D[indexes[0]][0] - minX;
-			int yoffset = wall.corners2D[indexes[0]][1] - minY;
-			int offset = xoffset + yoffset * wall.dirtyX;
-
-			int diffY_0_1 = Lamp.diffY(1, 0, indexes, wall.corners2D);
-			int diffY_0_2 = Lamp.diffY(2, 0, indexes, wall.corners2D);
-			int diffY_1_2 = Lamp.diffY(2, 1, indexes, wall.corners2D);
-
-			double xStep0_1 = Lamp.stepX(1, 0, indexes, wall.corners2D);
-			double xStep0_2 = Lamp.stepX(2, 0, indexes, wall.corners2D);
-			double xStep1_2 = Lamp.stepX(2, 1, indexes, wall.corners2D);
-
-			double p1_X = width;
-			double p1_X_step = (double) -width / (double) diffY_0_1;
-
-			double p1_Y = 0;
-			double p1_Y_step = (double) height / (double) diffY_1_2;
-
-			double p2_X = width;
-			double p2_X_step = (double) -width / (double) diffY_0_2;
-
-			double p2_Y = 0;
-			double p2_Y_step = (double) height / (double) diffY_0_2;
-
-			double x1 = 0, x2 = 0;
-
-			boolean flipX = false, flipY = false;
-
-			if (flipY) {
-				p1_Y = height;
-				p1_Y_step *= -1;
-				p2_Y = height;
-				p1_Y_step *= -1;
-//				p2_X = 0;
-//				p2_X_step *= -1;
-			}
-
-			for (int y = 0; y < diffY_0_1; ++y) {
-				scanline(p1_X, 0, p2_X, p2_Y, wall.buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), flipX, flipY);
-
-				x1 += xStep0_1;
-				p1_X += p1_X_step;
-				//p1_Y = 0 - zawsze w tej petli
-
-				x2 += xStep0_2;
-				p2_X += p2_X_step;
-				p2_Y += p2_Y_step;
-
-				offset += wall.dirtyX;
-			}
-
-			//b1 = brightnesses[indexes[1]];
-
-			if (diffY_0_1 == 0) {
-				x1 += wall.dirtyX;
-			}
-
-			p1_X = 0;
-
-			for (int y = diffY_0_1; y < diffY_0_2; ++y) {
-				//gradientLine(wall.buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), (int) b1, (int) b2);
-				scanline(0, p1_Y, p2_X, p2_Y, wall.buff, (int) (offset + x1), (int) (x2 - x1 + 0.5), flipX, flipY);
-
-				x1 += xStep1_2;
-				//p1_X = 0 - zawsze w tej petli
-				p1_Y += p1_Y_step;
-
-				x2 += xStep0_2;
-				p2_X += p2_X_step;
-				p2_Y += p2_Y_step;
-
-				offset += wall.dirtyX;
-			}
-		}
-	}
+	private Wall wall;
 
 	public void paintOn(Wall wall) {
+		this.wall = wall;
 		for (int i = 0; i < wall.buff.length; ++i) {
 			wall.buff[i] = 0;
 		}
@@ -185,7 +58,7 @@ public class PrimitiveImage {
 
 		int[][] triangleIndexes = {{0, 1, 2}, {0, 2, 3}};
 		boolean flipY = false;
-		
+
 		for (int i = 0; i < 2; ++i) {
 			int[] indexes = triangleIndexes[i];
 			Lamp.sortIndexes2D(indexes, wall.corners2D);
@@ -210,7 +83,7 @@ public class PrimitiveImage {
 				flipY = true;
 			}
 
-			System.out.println("INdeyx: " + indexes[0] + " " + indexes[1]);
+			//System.out.println("INdeyx: " + indexes[0] + " " + indexes[1]);
 			switch (indexes[0]) {
 				case 0: {
 					double[][] points = {{width, 0}, {width, 0}};
@@ -312,7 +185,7 @@ public class PrimitiveImage {
 
 		double x1 = 0, x2 = 0;
 		for (int y = 0; y < firstLoopCycles; ++y) {
-			scanline(p1, p2, buffOut, (int) (offset + x1), (int) (x2 - x1 + 0.5), flipX, flipY);
+			scanline(p1, p2, buffOut, (int) (offset + x1), (int) (x2 - x1), flipX, flipY);
 
 			x1 += first_x1_inc;
 			p1[0] += scanImageSteps[first_P1_inc][0];
@@ -330,7 +203,7 @@ public class PrimitiveImage {
 		}
 
 		for (int y = 0; y < secondLoopCycles; ++y) {
-			scanline(p1, p2, buffOut, (int) (offset + x1), (int) (x2 - x1 + 0.5), flipX, flipY);
+			scanline(p1, p2, buffOut, (int) (offset + x1), (int) (x2 - x1), flipX, flipY);
 
 			x1 += second_x1_inc;
 			p1[0] += scanImageSteps[second_P1_inc][0];
@@ -351,7 +224,8 @@ public class PrimitiveImage {
 			int[] buffOut, int offset, int steps, boolean flipX, boolean flipY) {
 
 		int offsetStep = (int) Math.signum(steps);
-		int absSteps = Math.abs(steps);
+
+		int absSteps = Math.abs(steps) + 1;
 		double stepX = (x2 - x1) / absSteps;
 		double stepY = (y2 - y1) / absSteps;
 
@@ -366,22 +240,54 @@ public class PrimitiveImage {
 			stepX *= -1;
 		}
 
-		if (flipX) {
-			x1 = x2;
-			stepX *= -1;
-			y1 = y2;
+		if (steps > 0) {
+			//++end;
+		} else {
+			//++offset;
 		}
-
 		try {
 			for (; offset != end; offset += offsetStep) {
+
 				localX = (int) x1;
 				localY = (int) y1;
-				buffOut[offset] = this.buff[localX + localY * width];
+
+				if (false) {
+					int color = 0xfe000000;
+					double rightAmount = 1 - x1 + localX;
+					double upAmount = 1 - y1 + localY;
+
+					int index = localX + localY * width;
+					int color1 = this.buff[index];
+					int color2 = this.buff[index + 1];
+					index += width;
+					int color3 = this.buff[index];
+					int color4 = this.buff[index + 1];
+					int part = 0, part1, part2, part3, part4;
+					for (int i = 0; i < 25; i += 8) {
+						part1 = (color1 & (0xff << i)) >> i;
+						part2 = (color2 & (0xff << i)) >> i;
+						part3 = (color3 & (0xff << i)) >> i;
+						part4 = (color4 & (0xff << i)) >> i;
+						part = (int) ((part1 * (1 - rightAmount) + part2 * rightAmount) * (1 - upAmount)
+								+ (part3 * (1 - rightAmount) + part4 * rightAmount) * upAmount);
+						if (part > 255) {
+							part = 255;
+						} else if (part < 0) {
+							part = 0;
+						}
+						color |= part << i;
+					}
+					buffOut[offset] = color;
+				} else {
+					buffOut[offset] = this.buff[localX + localY * width];
+				}
+
 				x1 += stepX;
 				y1 += stepY;
+
 			}
 		} catch (ArrayIndexOutOfBoundsException e) {
-			System.err.println("ERRR:" + this.buff.length + " " + e.getMessage());
+			//System.err.println("ERRR:" + this.buff.length + " " + e.getMessage());
 		}
 	}
 }

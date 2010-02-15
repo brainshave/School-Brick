@@ -12,8 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Klasa przechowująca informację o obrazkach umieszczonych na tej ścianie
@@ -45,13 +43,13 @@ public class Wall {
 	public Wall() {
 	}
 
-	{
-		try {
-			this.addImage(new PrimitiveImage(new File("D:\\Szkola\\Grafika\\Brick\\wall.jpg")));
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
+//	{
+//		try {
+//			this.addImage(new PrimitiveImage(new File("D:\\Szkola\\Grafika\\Brick\\wall.jpg")));
+//		} catch (IOException ex) {
+//			ex.printStackTrace();
+//		}
+//	}
 	public Wall(Color color, int num) {
 		this.color = color;
 		this.num = num;
@@ -68,6 +66,7 @@ public class Wall {
 			viewerVectors[i] = new Vector(viewer, corners3D[i]).normalize();
 		}
 		visible = viewerVectors[0].cosNorm(vector) < 0;
+		//nextImage();
 	}
 
 	public void reBuff(int width, int height, Lamp lamp) {
