@@ -37,7 +37,7 @@ public class PrimitiveImage {
 			ex.printStackTrace();
 		}
 		for (int i = 0; i < buff.length; ++i) {
-			//buff[i] &= 0xfeffffff;
+			buff[i] &= 0xfeffffff;
 		}
 	}
 
@@ -87,20 +87,12 @@ public class PrimitiveImage {
 
 		int[][] triangleIndexes = {{0, 1, 2}, {0, 2, 3}};
 
-		//for (int[] indexes : triangleIndexes) {
+		for (int[] indexes : triangleIndexes) {
 
-		{
-			int[] indexes = triangleIndexes[0];
-			Lamp.sortIndexes2D(indexes, wall.corners2D);
+//		{
+//			int[] indexes = triangleIndexes[0];
+//			Lamp.sortIndexes2D(indexes, wall.corners2D);
 
-
-//			int[] c0 = wall.corners2D[0], c1 = wall.corners2D[1];
-//			if(c0[1] == c1[1] && c0[0] > c1[0])
-//			{
-//				int tmp = indexes[0];
-//				indexes[0] = indexes[1];
-//				indexes[1] = tmp;
-//			}
 
 			int xoffset = wall.corners2D[indexes[0]][0] - minX;
 			int yoffset = wall.corners2D[indexes[0]][1] - minY;
@@ -192,10 +184,10 @@ public class PrimitiveImage {
 		int minY = p.getBounds().y;
 
 		int[][] triangleIndexes = {{0, 1, 2}, {0, 2, 3}};
-
-		//for (int[] indexes : triangleIndexes) {
-		{
-			int[] indexes = triangleIndexes[0];
+		boolean flipY = false;
+		
+		for (int i = 0; i < 2; ++i) {
+			int[] indexes = triangleIndexes[i];
 			Lamp.sortIndexes2D(indexes, wall.corners2D);
 
 			int xoffset = wall.corners2D[indexes[0]][0] - minX;
@@ -210,6 +202,14 @@ public class PrimitiveImage {
 			double xStep0_2 = Lamp.stepX(2, 0, indexes, wall.corners2D);
 			double xStep1_2 = Lamp.stepX(2, 1, indexes, wall.corners2D);
 
+			if (i == 1) {
+				for (int k = 0; k < 3; ++k) {
+					int[] mapping = {2, 1500, 0, 1};
+					indexes[k] = mapping[indexes[k]];
+				}
+				flipY = true;
+			}
+
 			System.out.println("INdeyx: " + indexes[0] + " " + indexes[1]);
 			switch (indexes[0]) {
 				case 0: {
@@ -221,7 +221,7 @@ public class PrimitiveImage {
 								diffY_0_1, A, C,
 								diffY_1_2, B,
 								wall.buff, offset, wall.dirtyX,
-								xStep0_1, xStep1_2, xStep0_2, false, false);
+								xStep0_1, xStep1_2, xStep0_2, false, flipY);
 					} else {
 						int[] steps = {diffY_0_2, -diffY_1_2, diffY_0_1};
 						subroutine(
@@ -229,7 +229,7 @@ public class PrimitiveImage {
 								diffY_0_1, C, A,
 								diffY_1_2, B,
 								wall.buff, offset, wall.dirtyX,
-								xStep0_1, xStep1_2, xStep0_2, false, false);
+								xStep0_1, xStep1_2, xStep0_2, false, flipY);
 					}
 					break;
 				}
@@ -244,7 +244,7 @@ public class PrimitiveImage {
 								diffY_0_1, A, B,
 								diffY_1_2, C,
 								wall.buff, offset, wall.dirtyX,
-								xStep0_1, xStep1_2, xStep0_2, false, false);
+								xStep0_1, xStep1_2, xStep0_2, false, flipY);
 					} else {
 						int[] steps = {-diffY_0_2, diffY_0_1, -diffY_1_2};
 
@@ -253,7 +253,7 @@ public class PrimitiveImage {
 								diffY_0_1, B, A,
 								diffY_1_2, C,
 								wall.buff, offset, wall.dirtyX,
-								xStep0_1, xStep1_2, xStep0_2, false, false);
+								xStep0_1, xStep1_2, xStep0_2, false, flipY);
 					}
 					break;
 				}
@@ -266,7 +266,7 @@ public class PrimitiveImage {
 								diffY_0_1, C, B,
 								diffY_1_2, A,
 								wall.buff, offset, wall.dirtyX,
-								xStep0_1, xStep1_2, xStep0_2, false, false);
+								xStep0_1, xStep1_2, xStep0_2, false, flipY);
 					} else {
 						int[] steps = {-diffY_1_2, -diffY_0_1, -diffY_0_2};
 						subroutine(
@@ -274,7 +274,7 @@ public class PrimitiveImage {
 								diffY_0_1, B, C,
 								diffY_1_2, A,
 								wall.buff, offset, wall.dirtyX,
-								xStep0_1, xStep1_2, xStep0_2, false, false);
+								xStep0_1, xStep1_2, xStep0_2, false, flipY);
 					}
 				}
 			}
@@ -362,6 +362,8 @@ public class PrimitiveImage {
 		if (flipY) {
 			y1 = height - 1 - y1;
 			stepY *= -1;
+			x1 = width - x1;
+			stepX *= -1;
 		}
 
 		if (flipX) {
